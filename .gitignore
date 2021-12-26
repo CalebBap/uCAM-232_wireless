@@ -1,6 +1,7 @@
 *.pdf
 basicCommunication.png
 PCB_layout.txt
+Credentials.h
 
 Arduino/WebServerSPIFFS.cpp
 Arduino/WebServerSPIFFS.h
