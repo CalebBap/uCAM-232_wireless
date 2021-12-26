@@ -1,3 +1,7 @@
 *.pdf
 basicCommunication.png
 PCB_layout.txt
+
+Arduino/WebServerSPIFFS.cpp
+Arduino/WebServerSPIFFS.h
+Arduino/temp/
