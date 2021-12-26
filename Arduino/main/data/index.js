@@ -1,11 +1,13 @@
-document.onload = function init(){
-    Socket = new WebSocket('ws://' + window.location.hostname + ':81/');
-    Socket.onmessage = function(event){
-        document.getElementById("responseConsole").value += event.data;
-    }
+var socket = new WebSocket('ws://10.100.0.200:81');
+socket.onmessage = function(event){
+	document.getElementById("responseConsole").value += event.data;
 }
 
+window.addEventListener('beforeunload', function (e) {
+	socket.close();
+});
+
 function syncCmd(){
-    Socket.send("#sync");
+    socket.send("#sync");
     document.getElementById("syncButton").disabled=true;
 }
