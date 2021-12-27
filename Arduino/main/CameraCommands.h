@@ -4,9 +4,10 @@
 #include <Arduino.h>
 
 class CameraCommands{
-    public:
-        static void attemptSync();
     private:
+    
+    public:
+        void attemptSync();
 };
 
 #endif

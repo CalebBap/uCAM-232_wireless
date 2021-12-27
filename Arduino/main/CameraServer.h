@@ -10,11 +10,10 @@
 class CameraServer{
     public:
         void initialise();
-        static void sendClientMessage(const char* message);
         void handleWifi();
-    private:      
-        static String getContentType(String filename);
-        static bool handleFileRead(String path);
+        static void sendClientMessage(const char* message);
+    private:
+        static void sendFile(String path);
 };
 
 #endif
