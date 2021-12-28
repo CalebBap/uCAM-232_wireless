@@ -13,7 +13,7 @@ class CameraServer{
         void handleWifi();
         static void sendClientMessage(const char* message);
     private:
-        static void sendFile(String path);
+        static void sendFile();
 };
 
 #endif

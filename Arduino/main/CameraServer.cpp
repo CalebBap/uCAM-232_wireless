@@ -19,14 +19,7 @@ void CameraServer::initialise(){
     yield();
   }
 
-  server.onNotFound([](){
-    String path = FileOperations::getFilePath(server.uri());
-
-    if(path == "")
-      server.send(404, "text/plain", "404: Not Found");
-    else
-      sendFile(path);
-  });
+  server.onNotFound(sendFile);
 
   server.begin();
   webSocket.begin();
@@ -52,8 +45,14 @@ void CameraServer::sendClientMessage(const char* message){
   webSocket.broadcastTXT(message, strlen(message));
 }
 
-void CameraServer::sendFile(String path){
+void CameraServer::sendFile(){
+  String path = FileOperations::getFilePath(server.uri());
   String mimeType = FileOperations::getMimeType(path);
+
+  if(path == ""){
+      server.send(404, "text/plain", "404: Not Found");
+      return;
+  }
   
   File file = SPIFFS.open(path, "r");
   size_t sent = server.streamFile(file, mimeType);
