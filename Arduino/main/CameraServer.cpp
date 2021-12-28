@@ -16,18 +16,16 @@ void CameraServer::initialise(){
   WiFi.begin(WAN_NAME, PASSWORD);
 
   while(WiFi.status() != WL_CONNECTED){
-    delay(1000);
+    yield();
   }
 
   server.onNotFound([](){
     String path = FileOperations::getFilePath(server.uri());
 
-    if(path != ""){
-      sendFile(path);
-    }
-    else{
+    if(path == "")
       server.send(404, "text/plain", "404: Not Found");
-    }
+    else
+      sendFile(path);
   });
 
   server.begin();
@@ -56,6 +54,7 @@ void CameraServer::sendClientMessage(const char* message){
 
 void CameraServer::sendFile(String path){
   String mimeType = FileOperations::getMimeType(path);
+  
   File file = SPIFFS.open(path, "r");
   size_t sent = server.streamFile(file, mimeType);
   file.close();
