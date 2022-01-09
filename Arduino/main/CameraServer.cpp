@@ -7,6 +7,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 ESP8266WebServer server;
 WebSocketsServer webSocket = WebSocketsServer(81);
 
+const char * syncCmd = "#sync";
+
 void CameraServer::initialise(){
   IPAddress staticIP(10, 100, 0, 200);
   IPAddress gateway(10, 100, 0, 254);
@@ -31,7 +33,7 @@ void CameraServer::initialise(){
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
   static CameraCommands cameraCommands;
   
-  if( (type == WStype_TEXT) && (payload[0] == '#') ){
+  if( (type == WStype_TEXT) && (memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0) ){
     cameraCommands.attemptSync();
   }
 }
