@@ -3,7 +3,7 @@
 CameraServer cameraServer;
 
 void setup(){
-  Serial.begin(57600);
+  Serial.begin(115200);
   delay(10);
 
   cameraServer.initialise();  
