@@ -7,7 +7,13 @@ window.addEventListener('beforeunload', function (e) {
 	socket.close();
 });
 
+/*
 function syncCmd(){
     socket.send("#sync");
     document.getElementById("syncButton").disabled=true;
+}
+*/
+
+function next(){
+    document.getElementById("response_console").value += "Next button pressed\n";
 }

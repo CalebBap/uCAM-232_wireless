@@ -1,0 +1,109 @@
+html{
+    width: 100vw;
+    height: 100vh;
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    background-color: #151515;
+}
+
+h1{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 0px;
+    padding-top: 2%;
+
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-weight: 500;
+    color: limegreen;
+}
+
+h2{
+    text-align: left;
+    padding-left: 2%;
+
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-weight: 400;
+    color: white;
+}
+
+p{
+    color: white;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+
+#controls_div{
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+}
+
+#prev_control_bttn{
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 8vh;
+}
+
+#prev_control_bttn:active{
+    opacity: 0.5;
+}
+
+#prev_control_text{
+    font-weight: 700;
+}
+
+#control_content{
+    height: 20vh;
+    width: 20vw;
+    justify-content: center;
+}
+
+#sync_text{
+    margin-top: auto;
+    margin-bottom: auto;
+
+    text-align: center;
+}
+
+#next_control_bttn{
+    height: 8vh;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#next_control_bttn:active{
+    opacity: 0.5;
+}
+
+#next_control_text{
+    font-weight: 700;
+}
+
+hr{
+    width: 99vw;
+    margin-top: 2%;
+
+    color: limegreen;
+}
+
+#console_div{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#response_console{
+    height:45%;
+    width: 90vw;
+    margin-left: 4vw;
+    margin-right: 4vw;
+
+    background-color: #151515;
+    color: limegreen;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    border: none;
+}

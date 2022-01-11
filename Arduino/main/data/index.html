@@ -6,17 +6,33 @@
 
         <title>Wireless Camera</title>
 
+        <link rel="icon" href="./img/favicon.ico" type="image/x-icon"/>
         <link rel="stylesheet" href="index.css" type="text/css"/>
-        <link rel="icon" href="favicon.ico" type="image/x-icon"/>
         <script src="index.js" type="text/javascript"></script>
     </head>
 
     <body>
         <h1>Wireless Camera Monitor</h1>
         <h2>Controls</h2>
-        <button id="syncButton" type="button" onClick="syncCmd()">Sync</button>
+        <div id="controls_div">
+            <div id="prev_control">
+                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="next()"/>
+                <p id="prev_control_text">Prev</p>
+            </div>
+
+            <div id="control_content">
+                <p id="sync_text">Sync camera</p>
+            </div>
+
+            <div id="next_control">
+                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png"/>
+                <p id="next_control_text">Next</p>
+            </div>
+        </div>
         <hr>
-        <h2>Response</h2>
-        <textarea id="responseConsole" autocomplete='off'></textarea>
+        <div id="console_div">
+            <h2>Console</h2>
+            <textarea readonly id="response_console" autocomplete='off' ></textarea>
+        </div>
     </body>
 </html>
