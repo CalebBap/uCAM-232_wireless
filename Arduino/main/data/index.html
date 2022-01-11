@@ -16,7 +16,7 @@
         <h2>Controls</h2>
         <div id="controls_div">
             <div id="prev_control">
-                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="next()"/>
+                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="prev()"/>
                 <p id="prev_control_text">Prev</p>
             </div>
 
@@ -25,13 +25,15 @@
             </div>
 
             <div id="next_control">
-                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png"/>
+                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="next()"/>
                 <p id="next_control_text">Next</p>
             </div>
         </div>
+
         <hr>
+        
+        <h2>Console</h2>
         <div id="console_div">
-            <h2>Console</h2>
             <textarea readonly id="response_console" autocomplete='off' ></textarea>
         </div>
     </body>
