@@ -1,6 +1,6 @@
 var socket = new WebSocket('ws://10.100.0.200:81');
 socket.onmessage = function(event){
-	document.getElementById("responseConsole").value += event.data;
+    addConsoleText(event.data);
 }
 
 window.addEventListener('beforeunload', function (e) {
@@ -14,6 +14,16 @@ function syncCmd(){
 }
 */
 
+function prev(){
+    addConsoleText("Previous button pressed\n");
+}
+
 function next(){
-    document.getElementById("response_console").value += "Next button pressed\n";
+    addConsoleText("Next button pressed\n");
+}
+
+function addConsoleText(text){
+    console =  document.getElementById("response_console");
+    console.value += text;
+    console.scrollTop = console.scrollHeight;
 }
