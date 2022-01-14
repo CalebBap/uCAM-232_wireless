@@ -16,16 +16,16 @@
         <h2>Controls</h2>
         <div id="controls_div">
             <div id="prev_control">
-                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="prev()"/>
+                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="fsm(-1)"/>
                 <p id="prev_control_text">Prev</p>
             </div>
 
             <div id="control_content">
-                <p id="sync_text">Sync camera</p>
+                <p id="sync_text">Sync with camera</p>
             </div>
 
             <div id="next_control">
-                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="next()"/>
+                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="fsm(1)"/>
                 <p id="next_control_text">Next</p>
             </div>
         </div>

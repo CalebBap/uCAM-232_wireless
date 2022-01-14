@@ -43,10 +43,13 @@ p{
     justify-content: center;
 }
 
-#prev_control_bttn{
+#prev_control{
     margin-top: auto;
     margin-bottom: auto;
-    height: 8vh;
+}
+
+#prev_control_bttn{
+    width: 3vw;
 }
 
 #prev_control_bttn:active{
@@ -60,7 +63,8 @@ p{
 #control_content{
     height: 20vh;
     width: 20vw;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
 }
 
 #sync_text{
@@ -70,10 +74,13 @@ p{
     text-align: center;
 }
 
-#next_control_bttn{
-    height: 8vh;
+#next_control{
     margin-top: auto;
     margin-bottom: auto;
+}
+
+#next_control_bttn{
+    width: 3vw;
 }
 
 #next_control_bttn:active{
