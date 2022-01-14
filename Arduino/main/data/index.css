@@ -34,6 +34,7 @@ h2{
 p{
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: 1em;
 }
 
 #controls_div{
@@ -46,10 +47,12 @@ p{
 #prev_control{
     margin-top: auto;
     margin-bottom: auto;
+    padding-right: 2vh;
+    text-align: center;
 }
 
 #prev_control_bttn{
-    width: 3vw;
+    height: 6vh;
 }
 
 #prev_control_bttn:active{
@@ -58,6 +61,8 @@ p{
 
 #prev_control_text{
     font-weight: 700;
+    margin: 0%;
+    padding-top: 0.5em;
 }
 
 #control_content{
@@ -77,10 +82,12 @@ p{
 #next_control{
     margin-top: auto;
     margin-bottom: auto;
+    padding-left: 2vh;
+    text-align: center;
 }
 
 #next_control_bttn{
-    width: 3vw;
+    height: 6vh;
 }
 
 #next_control_bttn:active{
@@ -89,6 +96,8 @@ p{
 
 #next_control_text{
     font-weight: 700;
+    margin: 0%;
+    padding-top: 0.5em;
 }
 
 hr{
