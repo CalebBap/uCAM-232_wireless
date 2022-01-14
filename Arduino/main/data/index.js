@@ -27,3 +27,7 @@ function addConsoleText(text){
     console.value += text;
     console.scrollTop = console.scrollHeight;
 }
+
+function clearTerminal(){
+    document.getElementById("response_console").value = "";
+}
