@@ -8,9 +8,9 @@ class Controller{
     }
 }
 
-var controller = new Controller();
-var view = new View();
-var model = new Model();
+let controller = new Controller();
+let view = new View();
+let model = new Model();
 
 window.addEventListener('load', function (e) {
     model.fsm(0);
