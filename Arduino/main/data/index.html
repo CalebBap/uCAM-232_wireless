@@ -8,7 +8,9 @@
 
         <link rel="icon" href="./img/favicon.ico" type="image/x-icon"/>
         <link rel="stylesheet" href="index.css" type="text/css"/>
-        <script src="index.js" type="text/javascript"></script>
+        <script src="./js/View.js" type="text/javascript"></script>
+        <script src="./js/Model.js" type="text/javascript"></script>
+        <script src="./js/Controller.js" type="text/javascript"></script>
     </head>
 
     <body>
@@ -16,7 +18,7 @@
         <h2>Controls</h2>
         <div id="controls_div">
             <div id="prev_control">
-                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="fsm(-1)"/>
+                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="controller.handleControlBttn(-1)"/>
                 <p id="prev_control_text">Prev</p>
             </div>
 
@@ -25,7 +27,7 @@
             </div>
 
             <div id="next_control">
-                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="fsm(1)"/>
+                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="controller.handleControlBttn(1)"/>
                 <p id="next_control_text">Next</p>
             </div>
         </div>
@@ -35,7 +37,7 @@
         <h2>Console</h2>
         <div id="console_div">
             <textarea readonly id="response_console" autocomplete='off' ></textarea>
-            <button id="clear_terminal_bttn" type="button" onclick="clearTerminal()">Clear terminal</button>
+            <button id="clear_terminal_bttn" type="button" onclick="handleClearBttn()">Clear terminal</button>
         </div>
     </body>
 </html>
