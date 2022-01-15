@@ -11,17 +11,20 @@ class Model{
         this.socket.close();
     }
 
-    syncCmd(){
-        try{
-            this.socket.send("#sync");
-        }
-        catch(error){
-            console.error(error);
+    syncCmd(nextBttnPressed){
+        if(nextBttnPressed){
+            try{
+                this.socket.send("#sync");
+            }
+            catch(error){
+                console.error(error);
+            }
         }
     }
 
     fsm(value){    
         this.fsm_state += value;
+        const nextBttnPressed = value == 1;
     
         if(this.fsm_state < 0){
             this.fsm_state = 0;
@@ -32,7 +35,7 @@ class Model{
                 view.showSyncControls();
                 break;
             case 1:
-                this.syncCmd();
+                this.syncCmd(nextBttnPressed);
                 view.showInitialControls();
                 break;
         }
