@@ -1,4 +1,13 @@
 class View{
+    loadError(){
+        document.getElementById("loading_text").innerHTML = "WebSocket failed to connect.<br> Please refresh the page to try again.";
+    }
+
+    loadSuccess(){
+        document.getElementById("loading_content").style.display = "none";
+        document.getElementById("main_content").style.display = "initial";
+    }
+
     showSyncControls(){
         document.getElementById("prev_control_bttn").style.pointerEvents = "none";
         document.getElementById("prev_control_bttn").disabled = true;

@@ -14,30 +14,35 @@
     </head>
 
     <body>
-        <h1>Wireless Camera Monitor</h1>
-        <h2>Controls</h2>
-        <div id="controls_div">
-            <div id="prev_control">
-                <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="controller.handleControlBttn(-1)"/>
-                <p id="prev_control_text">Prev</p>
-            </div>
-
-            <div id="control_content">
-                <p id="sync_text">Sync with camera<br>Status: <span id="sync_status">Not synced</span></p>
-            </div>
-
-            <div id="next_control">
-                <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="controller.handleControlBttn(1)"/>
-                <p id="next_control_text">Next</p>
-            </div>
+        <div id="loading_content">
+            <h1 id="loading_text">Waiting for WebSocket to connect...</h1>
         </div>
+        <div id="main_content">
+            <h1>Wireless Camera Monitor</h1>
+            <h2>Controls</h2>
+            <div id="controls_div">
+                <div id="prev_control">
+                    <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="controller.handleControlBttn(-1)"/>
+                    <p id="prev_control_text">Prev</p>
+                </div>
 
-        <hr>
-        
-        <h2>Console</h2>
-        <div id="console_div">
-            <textarea readonly id="response_console" autocomplete='off' ></textarea>
-            <button id="clear_terminal_bttn" type="button" onclick="controller.handleClearBttn()">Clear terminal</button>
+                <div id="control_content">
+                    <p id="sync_text">Sync with camera<br>Status: <span id="sync_status">Not synced</span></p>
+                </div>
+
+                <div id="next_control">
+                    <input id="next_control_bttn" type="image" src="./img/arrow_bttn_right.png" onclick="controller.handleControlBttn(1)"/>
+                    <p id="next_control_text">Next</p>
+                </div>
+            </div>
+
+            <hr>
+            
+            <h2>Console</h2>
+            <div id="console_div">
+                <textarea readonly id="response_console" autocomplete='off' ></textarea>
+                <button id="clear_terminal_bttn" type="button" onclick="controller.handleClearBttn()">Clear terminal</button>
+            </div>
         </div>
     </body>
 </html>

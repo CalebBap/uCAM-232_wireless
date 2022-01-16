@@ -37,6 +37,25 @@ p{
     font-size: 1em;
 }
 
+#loading_content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+#loading_text{
+    margin: 0px;
+}
+
+#main_content{
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
 #controls_div{
     margin-left: auto;
     margin-right: auto;
