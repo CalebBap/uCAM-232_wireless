@@ -16,6 +16,8 @@ let controller = new Controller();
 let view = new View();
 let model = new Model();
 
+model.connectWebSocket();
+
 window.addEventListener('load', function (e) {
     model.fsm(0);
 });

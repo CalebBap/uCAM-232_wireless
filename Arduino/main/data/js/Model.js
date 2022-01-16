@@ -1,11 +1,30 @@
 class Model{
     constructor(){
+        this.socket = null;
+        this.fsm_state = 0;
+        this.camera_synced = false;
+    }
+
+    connectWebSocket(){
         this.socket = new WebSocket('ws://10.100.0.200:81');
+
+        var timer = setTimeout(function() {
+            view.loadError();
+        }, 5000);
+
+        this.socket.onerror = function(event){
+            clearTimeout(timer);
+            view.loadError();
+        }
+
+        this.socket.onopen = function(event){
+            clearTimeout(timer);
+            view.loadSuccess();
+        }
+
         this.socket.onmessage = function(event){
             controller.handleWebSocketMessage(event.data);
         }
-        this.fsm_state = 0;
-        this.camera_synced = false;
     }
 
     closeWebSocket(){
