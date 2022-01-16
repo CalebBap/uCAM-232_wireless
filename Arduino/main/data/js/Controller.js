@@ -6,6 +6,10 @@ class Controller{
     handleControlBttn(value){
         model.fsm(value);
     }
+
+    handleWebSocketMessage(data){
+        view.addConsoleText(data);
+    }
 }
 
 let controller = new Controller();
