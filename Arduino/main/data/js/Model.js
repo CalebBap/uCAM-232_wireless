@@ -2,9 +2,10 @@ class Model{
     constructor(){
         this.socket = new WebSocket('ws://10.100.0.200:81');
         this.socket.onmessage = function(event){
-            view.addConsoleText(event.data);
+            controller.handleWebSocketMessage(event.data);
         }
         this.fsm_state = 0;
+        this.camera_synced = false;
     }
 
     closeWebSocket(){
@@ -35,7 +36,12 @@ class Model{
                 view.showSyncControls();
                 break;
             case 1:
-                this.syncCmd(nextBttnPressed);
+                if(!this.camera_synced){
+                    this.syncCmd(nextBttnPressed);
+                    view.waitForSync();
+                }
+                break;
+            case 2:
                 view.showInitialControls();
                 break;
         }

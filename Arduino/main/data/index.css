@@ -55,6 +55,10 @@ p{
     height: 6vh;
 }
 
+#prev_control_bttn:hover{
+    opacity: 0.8;
+}
+
 #prev_control_bttn:active{
     opacity: 0.5;
 }
@@ -77,6 +81,11 @@ p{
     margin-bottom: auto;
 
     text-align: center;
+    line-height: 1.5;
+}
+
+#sync_status{
+    color: red;
 }
 
 #next_control{
@@ -88,6 +97,10 @@ p{
 
 #next_control_bttn{
     height: 6vh;
+}
+
+#next_control_bttn:hover{
+    opacity: 0.8;
 }
 
 #next_control_bttn:active{
