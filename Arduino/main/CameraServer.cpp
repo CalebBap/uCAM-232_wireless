@@ -8,6 +8,16 @@ ESP8266WebServer server;
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 const char * syncCmd = "#sync";
+const char * initialCmd = "#initial";
+const char * getPictureCmd = "#getPicture";
+const char * snapshotCmd = "#snapshot";
+const char * setPackageSizeCmd = "#setPackageSize";
+const char * setBaudRateCmd = "#setBaudRate";
+const char * resetCmd = "#reset";
+const char * dataCmd = "#data";
+const char * ackCmd = "#ack";
+const char * nakCmd = "#nak";
+const char * lightCmd = "#light";
 
 void CameraServer::initialise(){
   IPAddress staticIP(10, 100, 0, 200);
@@ -32,7 +42,7 @@ void CameraServer::initialise(){
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
   static CameraCommands cameraCommands;
-  
+
   if( (type == WStype_TEXT) && (memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0) ){
     cameraCommands.attemptSync();
   }
