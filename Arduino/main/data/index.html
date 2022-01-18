@@ -27,7 +27,21 @@
                 </div>
 
                 <div id="control_content">
-                    <p id="sync_text">Sync with camera<br>Status: <span id="sync_status">Not synced</span></p>
+                    <p id="sync_text"><span id="sync_title">Sync with camera</span><br>Status: <span id="sync_status">Not synced</span></p>
+
+                    <div id="initial_options">
+                        <p id="initial_text">Initialise Camera</p>
+                        <label for="colour_type">Colour type: </label>
+                        <select name="colour_type" id="colour_type">
+                            <option value="2GS">2-bit Gray Scale</option>
+                            <option value="4GS">4-bit Gray Scale</option>
+                            <option value="8GS">8-bit Gray Scale</option>
+                            <option value="8C">8-bit Colour</option>
+                            <option value="12C">12-bit Colour</option>
+                            <option value="16C">16-bit Colour</option>
+                            <option value="J">JPEG</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="next_control">
