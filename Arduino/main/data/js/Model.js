@@ -53,9 +53,14 @@ class Model{
                 view.showSyncControls();
                 break;
             case 1:
-                if(!this.camera_synced && nextBttnPressed){
-                    this.syncCmd();
-                    view.waitForSync();
+                if(nextBttnPressed){
+                    if(!this.camera_synced){
+                        this.syncCmd();
+                        view.waitForSync();
+                    }
+                }
+                else{
+                    view.showSyncControls();
                 }
                 break;
             case 2:
