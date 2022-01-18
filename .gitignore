@@ -1,6 +1,4 @@
-*.pdf
-basicCommunication.png
-PCB_layout.txt
+Reference Material/
 Credentials.h
 
 Arduino/WebServerSPIFFS.cpp
