@@ -8,7 +8,23 @@ class Controller{
     }
 
     handleWebSocketMessage(data){
-        view.addConsoleText(data);
+        if(data.charAt(0) == '#'){
+            controller.handleCommand(data);
+        }
+        else{
+            view.addConsoleText(data);
+        }
+    }
+
+    handleCommand(command){
+        switch(command){
+            case "#sync_failed":
+                model.fsm(-1); //TODO
+                break;
+            case "#synced":
+                model.fsm(1);
+                break;
+        }
     }
 }
 
