@@ -32,6 +32,7 @@ void CameraCommands::attemptSync(){
                 }else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
                     CameraServer::sendClientMessage("Received SYNC\n");
                     Serial.write(ack_cmd, sizeof(ack_cmd));
+                    CameraServer::sendClientMessage("#synced");
                     return;
                 }
 
@@ -43,4 +44,5 @@ void CameraCommands::attemptSync(){
     }
     
     CameraServer::sendClientMessage("Failed to sync\n");
+    CameraServer::sendClientMessage("#sync_failed");
 }
