@@ -31,36 +31,35 @@ class Model{
         this.socket.close();
     }
 
-    syncCmd(nextBttnPressed){
-        if(nextBttnPressed){
-            try{
-                this.socket.send("#sync");
-            }
-            catch(error){
-                console.error(error);
-            }
+    syncCmd(){
+        try{
+            this.socket.send("#sync");
+        }
+        catch(error){
+            console.error(error);
         }
     }
 
-    fsm(value){    
+    fsm(value){
         this.fsm_state += value;
-        const nextBttnPressed = value == 1;
-    
         if(this.fsm_state < 0){
             this.fsm_state = 0;
         }
+
+        const nextBttnPressed = value == 1;
     
         switch(this.fsm_state){
             case 0:
                 view.showSyncControls();
                 break;
             case 1:
-                if(!this.camera_synced){
-                    this.syncCmd(nextBttnPressed);
+                if(!this.camera_synced && nextBttnPressed){
+                    this.syncCmd();
                     view.waitForSync();
                 }
                 break;
             case 2:
+                this.camera_synced = true;
                 view.showInitialControls();
                 break;
         }
