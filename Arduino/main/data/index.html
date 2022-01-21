@@ -17,22 +17,27 @@
         <div id="loading_content">
             <h1 id="loading_text">Waiting for WebSocket to connect...</h1>
         </div>
+
         <div id="main_content">
             <h1>Wireless Camera Monitor</h1>
-            <h2>Controls</h2>
+
+            <!--<h2>Controls</h2>-->
+
+            <h3 id="control_title">Sync with camera</h2>
+
             <div id="controls_div">
+
                 <div id="prev_control">
                     <input id="prev_control_bttn" type="image" src="./img/arrow_bttn_left.png" onclick="controller.handleControlBttn(-1)"/>
                     <p id="prev_control_text">Prev</p>
                 </div>
-
                 <div id="control_content">
-                    <p id="sync_text"><span id="sync_title">Sync with camera</span><br>Status: <span id="sync_status">Not synced</span></p>
+                    <p id="sync_text">Status: <span id="sync_status">Not synced</span></p>
 
                     <div id="initial_options">
-                        <p id="initial_text">Initialise Camera</p>
                         <label for="colour_type">Colour type: </label>
                         <select name="colour_type" id="colour_type">
+                            <option selected value=""></option>
                             <option value="2GS">2-bit Gray Scale</option>
                             <option value="4GS">4-bit Gray Scale</option>
                             <option value="8GS">8-bit Gray Scale</option>
@@ -40,6 +45,28 @@
                             <option value="12C">12-bit Colour</option>
                             <option value="16C">16-bit Colour</option>
                             <option value="J">JPEG</option>
+                        </select>
+                        <br>
+
+                        <label for="raw_resolutions">Raw resolution: </label>
+                        <select name="raw_resolutions" id="raw_resolutions">
+                            <option selected value=""></option>
+                            <option value="80x60">80x60</option>
+                            <option value="128x96">128x96</option>
+                            <option value="128x128">128x128</option>
+                            <option value="160x120">160x120</option>
+                            <option value="320x240">320x240</option>
+                            <option value="640x480">640x480</option>
+                        </select>
+                        <br>
+
+                        <label for="jpeg_resolutions">JPEG resolution: </label>
+                        <select name="jpeg_resolutions" id="jpeg_resolutions">
+                            <option selected value=""></option>
+                            <option value="80x64">80x64</option>
+                            <option value="160x128">160x128</option>
+                            <option value="320x240">320x240</option>
+                            <option value="640x480">640x480</option>
                         </select>
                     </div>
                 </div>
@@ -50,9 +77,9 @@
                 </div>
             </div>
 
-            <hr>
+            <!--<hr>-->
             
-            <h2>Console</h2>
+            <!--<h2>Console</h2>-->
             <div id="console_div">
                 <textarea readonly id="response_console" autocomplete='off' ></textarea>
                 <button id="clear_terminal_bttn" type="button" onclick="controller.handleClearBttn()">Clear terminal</button>

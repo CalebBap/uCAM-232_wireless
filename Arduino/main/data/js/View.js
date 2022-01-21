@@ -12,6 +12,7 @@ class View{
         document.getElementById("initial_options").style.display = "none";
 
         document.getElementById("sync_text").style.display = "initial";
+        document.getElementById("control_title").innerText = "Sync with Camera";
 
         document.getElementById("prev_control_bttn").style.pointerEvents = "none";
         document.getElementById("prev_control_bttn").disabled = true;
@@ -33,19 +34,20 @@ class View{
         document.getElementById("sync_text").style.display = "none";
 
         document.getElementById("initial_options").style.display = "initial";
+        document.getElementById("control_title").innerText = "Initialise Camera";
 
         document.getElementById("prev_control_bttn").style.pointerEvents = "auto";
         document.getElementById("prev_control_bttn").disabled = false;
         document.getElementById("prev_control").style.opacity = "1";
-        
+
         document.getElementById("next_control_bttn").style.pointerEvents = "auto";
         document.getElementById("next_control_bttn").disabled = false;
         document.getElementById("next_control").style.opacity = "1";
     }
 
     addConsoleText(text){
-        console =  document.getElementById("response_console");
-        console.value += text;
+        response_console =  document.getElementById("response_console");
+        response_console.value += text;
         console.scrollTop = console.scrollHeight;
     }
 

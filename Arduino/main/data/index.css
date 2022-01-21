@@ -15,9 +15,10 @@ h1{
     margin-right: auto;
     text-align: center;
     margin-top: 0px;
-    padding-top: 2%;
+    padding-top: 3vmin;
 
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(2em + 1.5vmin);
     font-weight: 500;
     color: limegreen;
 }
@@ -27,14 +28,26 @@ h2{
     padding-left: 2%;
 
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(1em + 1.5vmin);
     font-weight: 400;
+    color: white;
+}
+
+h3{    
+    width: 100vw;
+    text-align: center;
+    margin-top: 0px;
+
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(0.8em + 1.5vmin);
+    font-weight: 700;
     color: white;
 }
 
 p, label{
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: 1em;
+    font-size: calc(0.8em + 1vmin);
 }
 
 select{
@@ -83,7 +96,7 @@ select{
 }
 
 #prev_control_bttn{
-    height: 6vh;
+    height: 4vmax;
 }
 
 #prev_control_bttn:hover{
@@ -101,21 +114,17 @@ select{
 }
 
 #control_content{
-    height: 20vh;
-    width: 20vw;
+    height: 25vh;
+    width: 40vw;
     display: flex;
     flex-direction: column;
 }
 
 #sync_text{
-    margin-top: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
 
     text-align: center;
-    line-height: 2.5;
-}
-
-#sync_title{
-    font-weight: 700;
 }
 
 #sync_status{
@@ -131,11 +140,6 @@ select{
     text-align: center;
 }
 
-#initial_text{
-    margin-top: 0px;
-    font-weight: 700;
-}
-
 #next_control{
     margin-top: auto;
     margin-bottom: auto;
@@ -144,7 +148,7 @@ select{
 }
 
 #next_control_bttn{
-    height: 6vh;
+    height: 4vmax;
 }
 
 #next_control_bttn:hover{
@@ -175,7 +179,7 @@ hr{
 }
 
 #response_console{
-    height:40vh;
+    height:30vh;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
