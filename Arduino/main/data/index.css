@@ -108,7 +108,7 @@ select{
 
 #control_content{
     height: 25vh;
-    width: 40vw;
+    width: 40vmin;
     display: flex;
     flex-direction: column;
 }
@@ -161,13 +161,6 @@ select{
     padding-top: 0.5em;
 }
 
-hr{
-    width: 99vw;
-    margin-top: 2%;
-
-    color: limegreen;
-}
-
 #console_div{
     height: 40vh;
     width: 60vw;
@@ -190,11 +183,11 @@ hr{
 
 #clear_terminal_bttn{
     margin-top: 1vh;
-    padding: 1em;
+    padding: 0.75em;
 
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: calc(0.5em + 1vmin);
+    font-size: calc(0.4em + 1vh);
     font-weight: 400;
     background-color: #151515;
     border: 0.3em solid #282828;
