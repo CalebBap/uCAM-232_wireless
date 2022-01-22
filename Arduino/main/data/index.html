@@ -21,9 +21,7 @@
         <div id="main_content">
             <h1>Wireless Camera Monitor</h1>
 
-            <!--<h2>Controls</h2>-->
-
-            <h3 id="control_title">Sync with camera</h2>
+            <h2 id="control_title">Sync with camera</h2>
 
             <div id="controls_div">
 
@@ -35,7 +33,7 @@
                     <p id="sync_text">Status: <span id="sync_status">Not synced</span></p>
 
                     <div id="initial_options">
-                        <label for="colour_type">Colour type: </label>
+                        <label for="colour_type">Colour type: </label><br>
                         <select name="colour_type" id="colour_type">
                             <option selected value=""></option>
                             <option value="2GS">2-bit Gray Scale</option>
@@ -48,7 +46,7 @@
                         </select>
                         <br>
 
-                        <label for="raw_resolutions">Raw resolution: </label>
+                        <label for="raw_resolutions">Raw resolution: </label><br>
                         <select name="raw_resolutions" id="raw_resolutions">
                             <option selected value=""></option>
                             <option value="80x60">80x60</option>
@@ -60,7 +58,7 @@
                         </select>
                         <br>
 
-                        <label for="jpeg_resolutions">JPEG resolution: </label>
+                        <label for="jpeg_resolutions">JPEG resolution: </label><br>
                         <select name="jpeg_resolutions" id="jpeg_resolutions">
                             <option selected value=""></option>
                             <option value="80x64">80x64</option>
@@ -76,10 +74,7 @@
                     <p id="next_control_text">Next</p>
                 </div>
             </div>
-
-            <!--<hr>-->
             
-            <!--<h2>Console</h2>-->
             <div id="console_div">
                 <textarea readonly id="response_console" autocomplete='off' ></textarea>
                 <button id="clear_terminal_bttn" type="button" onclick="controller.handleClearBttn()">Clear terminal</button>

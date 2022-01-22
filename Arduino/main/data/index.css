@@ -14,32 +14,22 @@ h1{
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    margin-top: 0px;
+    margin: 0 auto 0 auto;
     padding-top: 3vmin;
 
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: calc(2em + 1.5vmin);
+    font-size: calc(1.5em + 2vmin);
     font-weight: 500;
     color: limegreen;
 }
 
-h2{
-    text-align: left;
-    padding-left: 2%;
+h2{    
+    width: 100vw;
+    text-align: center;
+    margin: 3vmin auto 3vmin auto;
 
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-size: calc(1em + 1.5vmin);
-    font-weight: 400;
-    color: white;
-}
-
-h3{    
-    width: 100vw;
-    text-align: center;
-    margin-top: 0px;
-
-    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: calc(0.8em + 1.5vmin);
     font-weight: 700;
     color: white;
 }
@@ -47,19 +37,21 @@ h3{
 p, label{
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: calc(0.8em + 1vmin);
+    font-size: calc(0.7em + 1vmin);
+    font-weight: 400;
 }
 
 select{
     max-width: 80%;
-    margin-top: 2%;
+    margin: 1vh auto 2vh auto;
     padding: 0.5em;
 
     border: 0.2em solid #282828;
     background-color: #151515;
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: 0.8em;
+    font-size: calc(0.5em + 1vmin);
+    font-weight: 400;
 }
 
 #loading_content{
@@ -82,10 +74,11 @@ select{
 }
 
 #controls_div{
-    margin-left: auto;
-    margin-right: auto;
+    margin: 1.5vmin auto 1.5vmin auto;
+    height: 30vh;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #prev_control{
@@ -137,6 +130,9 @@ select{
     margin-top: 0px;
     display: none;
 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
@@ -173,13 +169,13 @@ hr{
 }
 
 #console_div{
-    width: 50vw;
-    margin-left: auto;
-    margin-right: auto;
+    height: 40vh;
+    width: 60vw;
+    margin: 1.5vmin auto 1.5vmin auto;
 }
 
 #response_console{
-    height:30vh;
+    height:40vh;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -187,6 +183,8 @@ hr{
     background-color: #282828;
     color: limegreen;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(0.7em + 1vmin);
+    font-weight: 300;
     border: none;
 }
 
@@ -196,6 +194,8 @@ hr{
 
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(0.5em + 1vmin);
+    font-weight: 400;
     background-color: #151515;
     border: 0.3em solid #282828;
 }

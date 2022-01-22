@@ -5,7 +5,7 @@ class View{
 
     loadSuccess(){
         document.getElementById("loading_content").style.display = "none";
-        document.getElementById("main_content").style.display = "initial";
+        document.getElementById("main_content").style.display = "block";
     }
 
     showSyncControls(){
@@ -33,7 +33,7 @@ class View{
         document.getElementById("sync_status").style = "color: limegreen";
         document.getElementById("sync_text").style.display = "none";
 
-        document.getElementById("initial_options").style.display = "initial";
+        document.getElementById("initial_options").style.display = "flex";
         document.getElementById("control_title").innerText = "Initialise Camera";
 
         document.getElementById("prev_control_bttn").style.pointerEvents = "auto";
