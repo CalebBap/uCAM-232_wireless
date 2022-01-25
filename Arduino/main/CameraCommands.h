@@ -8,6 +8,7 @@ class CameraCommands{
     
     public:
         void attemptSync();
+        void attemptInitialisation();
 };
 
 #endif

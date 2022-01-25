@@ -8,7 +8,7 @@ ESP8266WebServer server;
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 const char * syncCmd = "#sync";
-const char * initialCmd = "#initial";
+const char * initialiseCmd = "#initial";
 const char * getPictureCmd = "#getPicture";
 const char * snapshotCmd = "#snapshot";
 const char * setPackageSizeCmd = "#setPackageSize";
@@ -43,8 +43,13 @@ void CameraServer::initialise(){
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
   static CameraCommands cameraCommands;
 
-  if( (type == WStype_TEXT) && (memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0) ){
-    cameraCommands.attemptSync();
+  if(type == WStype_TEXT){
+    if(memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0){
+      cameraCommands.attemptSync();
+    }
+    else if(memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0){
+      cameraCommands.attemptInitialisation();
+    }
   }
 }
 

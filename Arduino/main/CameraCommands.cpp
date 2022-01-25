@@ -46,3 +46,7 @@ void CameraCommands::attemptSync(){
     CameraServer::sendClientMessage("Failed to sync\n");
     CameraServer::sendClientMessage("#sync_failed");
 }
+
+void CameraCommands::attemptInitialisation(){
+  CameraServer::sendClientMessage("Attempting initialisation...\n");
+}
