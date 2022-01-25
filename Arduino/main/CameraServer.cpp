@@ -48,7 +48,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       cameraCommands.attemptSync();
     }
     else if(memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0){
-      cameraCommands.attemptInitialisation();
+      cameraCommands.attemptInitialisation((char *)payload);
     }
   }
 }

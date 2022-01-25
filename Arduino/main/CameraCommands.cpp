@@ -47,6 +47,19 @@ void CameraCommands::attemptSync(){
     CameraServer::sendClientMessage("#sync_failed");
 }
 
-void CameraCommands::attemptInitialisation(){
+void CameraCommands::attemptInitialisation(const char* command){
   CameraServer::sendClientMessage("Attempting initialisation...\n");
+
+  const char *start_parameter_1 = strchr(command, ':') + 1;
+  const char *start_parameter_2 = strchr(command, ',') + 1;
+
+  size_t parameter_1_length = start_parameter_2 - start_parameter_1;
+  size_t parameter_2_length = (command + strlen(command)) - start_parameter_2;
+  
+  char parameter_1[parameter_1_length];
+  char parameter_2[parameter_2_length];
+  
+  strncpy(parameter_1, start_parameter_1, parameter_1_length);
+  parameter_1[sizeof(parameter_1) - 1] = '\0';
+  strncpy(parameter_2, start_parameter_2, parameter_2_length);
 }

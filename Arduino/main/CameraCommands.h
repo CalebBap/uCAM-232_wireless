@@ -8,7 +8,7 @@ class CameraCommands{
     
     public:
         void attemptSync();
-        void attemptInitialisation();
+        void attemptInitialisation(const char* command);
 };
 
 #endif
