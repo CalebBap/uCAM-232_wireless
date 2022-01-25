@@ -14,15 +14,11 @@ class View{
         document.getElementById("sync_text").style.display = "initial";
         document.getElementById("control_title").innerText = "Sync with Camera";
 
-        document.getElementById("prev_control_bttn").style.pointerEvents = "none";
-        document.getElementById("prev_control_bttn").disabled = true;
-        document.getElementById("prev_control").style.opacity = "0.5";
+        this.setButtonState("prev_control", "prev_control_bttn", false);
     }
 
     waitForSync(){
-        document.getElementById("next_control_bttn").style.pointerEvents = "none";
-        document.getElementById("next_control_bttn").disabled = true;
-        document.getElementById("next_control").style.opacity = "0.5";
+        this.setButtonState("next_control", "next_control_bttn", false);
 
         document.getElementById("sync_status").innerText = "...";
         document.getElementById("sync_status").style = "color:white";
@@ -36,13 +32,21 @@ class View{
         document.getElementById("initial_options").style.display = "flex";
         document.getElementById("control_title").innerText = "Initialise Camera";
 
-        document.getElementById("prev_control_bttn").style.pointerEvents = "auto";
-        document.getElementById("prev_control_bttn").disabled = false;
-        document.getElementById("prev_control").style.opacity = "1";
+        this.setButtonState("prev_control", "prev_control_bttn", true);
+        this.setButtonState("next_control", "next_control_bttn", true);
+    }
 
-        document.getElementById("next_control_bttn").style.pointerEvents = "auto";
-        document.getElementById("next_control_bttn").disabled = false;
-        document.getElementById("next_control").style.opacity = "1";
+    setButtonState(div_id, button_id, enable){
+        if(enable){
+            document.getElementById(button_id).style.pointerEvents = "auto";
+            document.getElementById(button_id).disabled = false;
+            document.getElementById(div_id).style.opacity = "1";
+        }
+        else{
+            document.getElementById(button_id).style.pointerEvents = "none";
+            document.getElementById(button_id).disabled = true;
+            document.getElementById(div_id).style.opacity = "0.5";
+        }
     }
 
     addConsoleText(text){
