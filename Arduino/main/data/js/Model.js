@@ -47,7 +47,7 @@ class Model{
         let resolution = (colour_type === "J") ? jpeg_resolution.value : res_resolution.value;
 
         try{
-            this.socket.send("#init:" + resolution);
+            this.socket.send("#init:" + colour_type + "," + resolution);
         }
         catch(error){
             console.error(error);
