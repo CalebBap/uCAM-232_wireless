@@ -2,7 +2,6 @@ class Model{
     constructor(){
         this.socket = null;
         this.fsm_state = 0;
-        this.camera_synced = false;
     }
 
     connectWebSocket(){
@@ -40,6 +39,32 @@ class Model{
         }
     }
 
+    initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value){
+        let all_options_selected = false;
+
+        if( (colour_value === "") || (colour_value === undefined) ){
+            view.setSelectionState("raw_resolutions", false);
+            view.setSelectionState("jpeg_resolutions", false);
+            all_options_selected = false;
+        }
+        else if(colour_value === "J"){
+            view.setSelectionState("jpeg_resolutions", true);
+            view.setSelectionState("raw_resolutions", false);
+            all_options_selected = (jpeg_res_value !== "");
+        }
+        else{
+            view.setSelectionState("raw_resolutions", true);
+            view.setSelectionState("jpeg_resolutions", false);
+            all_options_selected = (raw_res_value !== "");
+        }
+
+        if(all_options_selected){
+            view.setButtonState("next_control", "next_control_bttn", true);
+        }else{
+            view.setButtonState("next_control", "next_control_bttn", false);
+        }
+    }
+
     fsm(value){
         this.fsm_state += value;
         if(this.fsm_state < 0){
@@ -54,18 +79,16 @@ class Model{
                 break;
             case 1:
                 if(nextBttnPressed){
-                    if(!this.camera_synced){
-                        this.syncCmd();
-                        view.waitForSync();
-                    }
+                    this.syncCmd();
+                    view.waitForSync();
                 }
                 else{
                     view.showSyncControls();
                 }
                 break;
             case 2:
-                this.camera_synced = true;
-                view.showInitialControls();
+                view.showInitialiseControls();
+                this.initialiseOptionSelection();
                 break;
         }
     }

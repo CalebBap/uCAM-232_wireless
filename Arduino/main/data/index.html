@@ -32,9 +32,9 @@
                 <div id="control_content">
                     <p id="sync_text">Status: <span id="sync_status">Not synced</span></p>
 
-                    <div id="initial_options">
+                    <div id="initialise_options">
                         <label for="colour_type">Colour type: </label><br>
-                        <select name="colour_type" id="colour_type">
+                        <select id="colour_type" name="colour_type" autocomplete="off" onchange="controller.handleInitialiseSelection()">
                             <option selected value=""></option>
                             <option value="2GS">2-bit Gray Scale</option>
                             <option value="4GS">4-bit Gray Scale</option>
@@ -47,7 +47,7 @@
                         <br>
 
                         <label for="raw_resolutions">Raw resolution: </label><br>
-                        <select name="raw_resolutions" id="raw_resolutions">
+                        <select id="raw_resolutions" name="raw_resolutions" autocomplete="off" onchange="controller.handleInitialiseSelection()">
                             <option selected value=""></option>
                             <option value="80x60">80x60</option>
                             <option value="128x96">128x96</option>
@@ -59,7 +59,7 @@
                         <br>
 
                         <label for="jpeg_resolutions">JPEG resolution: </label><br>
-                        <select name="jpeg_resolutions" id="jpeg_resolutions">
+                        <select id="jpeg_resolutions" name="jpeg_resolutions" autocomplete="off" onchange="controller.handleInitialiseSelection()">
                             <option selected value=""></option>
                             <option value="80x64">80x64</option>
                             <option value="160x128">160x128</option>

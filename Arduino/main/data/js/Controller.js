@@ -1,12 +1,4 @@
 class Controller{
-    handleClearBttn(){
-        view.clearTerminal();
-    }
-
-    handleControlBttn(value){
-        model.fsm(value);
-    }
-
     handleWebSocketMessage(data){
         if(data.charAt(0) == '#'){
             controller.handleCommand(data);
@@ -14,6 +6,10 @@ class Controller{
         else{
             view.addConsoleText(data);
         }
+    }
+
+    handleControlBttn(value){
+        model.fsm(value);
     }
 
     handleCommand(command){
@@ -25,6 +21,17 @@ class Controller{
                 model.fsm(1);
                 break;
         }
+    }
+
+    handleInitialiseSelection(){
+        let colour_value = document.getElementById("colour_type").value;
+        let raw_res_value = document.getElementById("raw_resolutions").value;
+        let jpeg_res_value = document.getElementById("jpeg_resolutions").value;
+        model.initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value);
+    }
+    
+    handleClearBttn(){
+        view.clearTerminal();
     }
 }
 

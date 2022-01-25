@@ -9,12 +9,13 @@ class View{
     }
 
     showSyncControls(){
-        document.getElementById("initial_options").style.display = "none";
+        document.getElementById("initialise_options").style.display = "none";
 
         document.getElementById("sync_text").style.display = "initial";
         document.getElementById("control_title").innerText = "Sync with Camera";
 
         this.setButtonState("prev_control", "prev_control_bttn", false);
+        this.setButtonState("next_control", "next_control_bttn", true);
     }
 
     waitForSync(){
@@ -24,16 +25,15 @@ class View{
         document.getElementById("sync_status").style = "color:white";
     }
 
-    showInitialControls(){
+    showInitialiseControls(){
         document.getElementById("sync_status").innerText = "Synced";
         document.getElementById("sync_status").style = "color: limegreen";
         document.getElementById("sync_text").style.display = "none";
 
-        document.getElementById("initial_options").style.display = "flex";
+        document.getElementById("initialise_options").style.display = "flex";
         document.getElementById("control_title").innerText = "Initialise Camera";
 
         this.setButtonState("prev_control", "prev_control_bttn", true);
-        this.setButtonState("next_control", "next_control_bttn", true);
     }
 
     setButtonState(div_id, button_id, enable){
@@ -46,6 +46,18 @@ class View{
             document.getElementById(button_id).style.pointerEvents = "none";
             document.getElementById(button_id).disabled = true;
             document.getElementById(div_id).style.opacity = "0.5";
+        }
+    }
+
+    setSelectionState(select_id, enable){
+        if(enable){
+            document.getElementById(select_id).disabled = false;
+            document.getElementById(select_id).style.opacity = "1";
+        }
+        else{
+            document.getElementById(select_id).value = "";
+            document.getElementById(select_id).disabled = true;
+            document.getElementById(select_id).style.opacity = "0.5";
         }
     }
 
