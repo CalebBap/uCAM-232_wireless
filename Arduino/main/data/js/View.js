@@ -47,7 +47,7 @@ class View{
 
     addConsoleText(text){
         response_console =  document.getElementById("response_console");
-        response_console.value += text;
+        response_console.value += text + '\n';
         console.scrollTop = console.scrollHeight;
     }
 

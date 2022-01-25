@@ -162,13 +162,13 @@ select{
 }
 
 #console_div{
-    height: 40vh;
-    width: 60vw;
+    height: 35vh;
+    width: 50vw;
     margin: 1.5vmin auto 1.5vmin auto;
 }
 
 #response_console{
-    height:40vh;
+    height: 100%;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -179,7 +179,6 @@ select{
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-size: calc(0.5em + 1vh);
     font-weight: 300;
-    line-height: 1.5;
     border: none;
 }
 
