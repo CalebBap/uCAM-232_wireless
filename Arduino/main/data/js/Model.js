@@ -39,28 +39,54 @@ class Model{
         }
     }
 
+    initCmd(){
+        let colour_type = document.getElementById("colour_type").value;
+        let res_resolution = document.getElementById("raw_resolutions");
+        let jpeg_resolution = document.getElementById("jpeg_resolutions");
+
+        let resolution = (colour_type === "J") ? jpeg_resolution.value : res_resolution.value;
+
+        try{
+            this.socket.send("#init:" + resolution);
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
     initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value){
         let all_options_selected = false;
 
         if( (colour_value === "") || (colour_value === undefined) ){
             view.setSelectionState("raw_resolutions", false);
+            view.clearElementValue("raw_resolutions");
+
             view.setSelectionState("jpeg_resolutions", false);
+            view.clearElementValue("jpeg_resolutions");
+
             all_options_selected = false;
         }
         else if(colour_value === "J"){
             view.setSelectionState("jpeg_resolutions", true);
+
             view.setSelectionState("raw_resolutions", false);
+            view.clearElementValue("raw_resolutions");
+
             all_options_selected = (jpeg_res_value !== "");
         }
         else{
             view.setSelectionState("raw_resolutions", true);
+
             view.setSelectionState("jpeg_resolutions", false);
+            view.clearElementValue("jpeg_resolutions");
+
             all_options_selected = (raw_res_value !== "");
         }
 
         if(all_options_selected){
             view.setButtonState("next_control", "next_control_bttn", true);
-        }else{
+        }
+        else{
             view.setButtonState("next_control", "next_control_bttn", false);
         }
     }
@@ -89,6 +115,18 @@ class Model{
             case 2:
                 view.showInitialiseControls();
                 this.initialiseOptionSelection();
+                break;
+            case 3:
+                if(nextBttnPressed){
+                    this.initCmd();
+                    view.waitForInit();
+                }
+                else{
+                    view.showInitialiseControls();
+                }
+                break;
+            case 4:
+                console.log("Initialisation succeeded"); //TODO
                 break;
         }
     }

@@ -36,6 +36,15 @@ class View{
         this.setButtonState("prev_control", "prev_control_bttn", true);
     }
 
+    waitForInit(){
+        this.setButtonState("prev_control", "prev_control_bttn", false);
+        this.setButtonState("next_control", "next_control_bttn", false);
+        
+        this.setSelectionState("colour_type", false);
+        this.setSelectionState("raw_resolutions", false);
+        this.setSelectionState("jpeg_resolutions", false);
+    }
+
     setButtonState(div_id, button_id, enable){
         if(enable){
             document.getElementById(button_id).style.pointerEvents = "auto";
@@ -55,7 +64,6 @@ class View{
             document.getElementById(select_id).style.opacity = "1";
         }
         else{
-            document.getElementById(select_id).value = "";
             document.getElementById(select_id).disabled = true;
             document.getElementById(select_id).style.opacity = "0.5";
         }
@@ -67,7 +75,7 @@ class View{
         console.scrollTop = console.scrollHeight;
     }
 
-    clearTerminal(){
-        document.getElementById("response_console").value = "";
+    clearElementValue(id){
+        document.getElementById(id).value = "";
     }
 }

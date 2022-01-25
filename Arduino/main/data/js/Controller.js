@@ -31,7 +31,7 @@ class Controller{
     }
     
     handleClearBttn(){
-        view.clearTerminal();
+        view.clearElementValue("response_console");
     }
 }
 
