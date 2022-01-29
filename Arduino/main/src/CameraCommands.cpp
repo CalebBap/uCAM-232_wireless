@@ -29,7 +29,8 @@ void CameraCommands::attemptSync(){
                 if(!received_ack && memcmp(reply, ack_reply, sizeof(ack_reply))){
                     CameraServer::sendClientMessage("Received ACK\n");
                     received_ack = true;
-                }else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
+                }
+                else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
                     CameraServer::sendClientMessage("Received SYNC\n");
                     Serial.write(ack_cmd, sizeof(ack_cmd));
                     CameraServer::sendClientMessage("#synced");
@@ -48,6 +49,8 @@ void CameraCommands::attemptSync(){
 }
 
 void CameraCommands::attemptInitialisation(const char* command){
+  byte init_cmd[] = {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
+  
   CameraServer::sendClientMessage("Attempting initialisation...\n");
 
   const char *start_parameter_1 = strchr(command, ':') + 1;
