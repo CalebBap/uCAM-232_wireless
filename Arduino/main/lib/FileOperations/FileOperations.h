@@ -2,6 +2,7 @@
 #define FileOperations_h
 
 #include <Arduino.h>
+#include <FS.h>
 
 class FileOperations{
     private:

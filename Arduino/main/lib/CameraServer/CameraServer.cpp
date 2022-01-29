@@ -1,6 +1,4 @@
 #include "CameraServer.h"
-#include "CameraCommands.h"
-#include "FileOperations.h"
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 
@@ -72,6 +70,6 @@ void CameraServer::sendFile(){
   }
   
   File file = SPIFFS.open(path, "r");
-  size_t sent = server.streamFile(file, mimeType);
+  server.streamFile(file, mimeType);
   file.close();
 }

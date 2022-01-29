@@ -5,7 +5,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
-#include "Credentials.h"
+#include "..\..\src\Credentials.h"
+#include "..\FileOperations\FileOperations.h"
+#include "..\CameraCommands\CameraCommands.h"
 
 class CameraServer{
     public:

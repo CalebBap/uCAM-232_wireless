@@ -1,5 +1,4 @@
 #include "FileOperations.h"
-#include <FS.h>
 
 String FileOperations::getMimeType(String filename){
   if(filename.endsWith(".html")){

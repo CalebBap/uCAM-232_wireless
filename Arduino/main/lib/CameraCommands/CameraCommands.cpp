@@ -1,9 +1,4 @@
 #include "CameraCommands.h"
-#include "CameraServer.h"
-
-#define NUM_BYTES_IN_CMD 6
-#define MAX_SYNC_ATTEMPTS 60
-#define MIN_SYNC_DELAY  5
 
 void CameraCommands::attemptSync(){
     byte sync_cmd[] = {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};

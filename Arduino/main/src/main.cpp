@@ -1,4 +1,5 @@
-#include "CameraServer.h"
+#include <Arduino.h>
+#include "../lib/CameraServer/CameraServer.h"
 
 CameraServer cameraServer;
 
