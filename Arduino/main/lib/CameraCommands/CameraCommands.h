@@ -2,6 +2,8 @@
 #define CameraCommands_h
 
 #include <Arduino.h>
+#include <map>
+#include <string>
 #include "..\CameraServer\CameraServer.h"
 
 #define NUM_BYTES_IN_CMD 6
@@ -10,10 +12,10 @@
 
 class CameraCommands{
     private:
-    
+        static void attemptInitialisation(const byte* init_cmd);
     public:
         void attemptSync();
-        void attemptInitialisation(const char* command);
+        void parseInitialisationParameters(const char* command);
 };
 
 #endif
