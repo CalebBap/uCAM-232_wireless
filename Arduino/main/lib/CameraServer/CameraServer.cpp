@@ -46,7 +46,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       cameraCommands.attemptSync();
     }
     else if(memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0){
-      cameraCommands.attemptInitialisation((char *)payload);
+      cameraCommands.parseInitialisationParameters((char *)payload);
     }
   }
 }
@@ -58,6 +58,12 @@ void CameraServer::handleWifi(){
 
 void CameraServer::sendClientMessage(const char* message){
   webSocket.broadcastTXT(message, strlen(message));
+}
+
+void CameraServer::sendClientCommand(const byte cmd[]){
+  char values[36];
+  sprintf(values, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n", cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
+  webSocket.broadcastTXT(values, strlen(values));
 }
 
 void CameraServer::sendFile(){

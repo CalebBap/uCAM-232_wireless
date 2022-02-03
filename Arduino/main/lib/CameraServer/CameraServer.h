@@ -14,6 +14,7 @@ class CameraServer{
         void initialise();
         void handleWifi();
         static void sendClientMessage(const char* message);
+        static void sendClientCommand(const byte cmd[]);
     private:
         static void sendFile();
 };
