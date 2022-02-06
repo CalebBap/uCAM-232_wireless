@@ -118,6 +118,7 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd){
             if(memcmp(reply, ack_reply, sizeof(ack_reply))){
                 CameraServer::sendClientMessage("Received ACK: ");
                 CameraServer::sendClientCommand(reply);
+                CameraServer::sendClientMessage("#initialised");
                 return;
             }
 
