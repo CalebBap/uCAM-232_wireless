@@ -1,12 +1,24 @@
 #include "CameraCommands.h"
 
+void CameraCommands::receiveCameraResponse(byte* reply){
+    int byte_num = 0;
+
+    while(Serial.available() > 0){
+        reply[byte_num] = Serial.read();
+        byte_num++;
+
+        if(byte_num == NUM_BYTES_IN_CMD){
+            break;
+        }
+    }
+}
+
 void CameraCommands::attemptSync(){
     byte sync_cmd[] = {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};
     byte ack_cmd[] = {0xAA, 0x0E, 0x0D, 0x00, 0x00, 0x00};
     byte ack_reply[] = {0xAA, 0x0E, 0x0D};
-    
     byte reply[NUM_BYTES_IN_CMD];
-    int byte_num = 0;
+    
     bool received_ack = false;
 
     CameraServer::sendClientMessage("Attempting to sync with command: ");
@@ -17,26 +29,19 @@ void CameraCommands::attemptSync(){
         
         delay(MIN_SYNC_DELAY + i);
 
-        while(Serial.available() > 0){
-            reply[byte_num] = Serial.read();
-            byte_num++;
+        receiveCameraResponse(reply);
 
-            if(byte_num == NUM_BYTES_IN_CMD){
-                if(!received_ack && memcmp(reply, ack_reply, sizeof(ack_reply))){
-                    CameraServer::sendClientMessage("Received ACK: ");
-                    CameraServer::sendClientCommand(reply);
-                    received_ack = true;
-                }
-                else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
-                    CameraServer::sendClientMessage("Received SYNC: ");
-                    CameraServer::sendClientCommand(reply);
-                    Serial.write(ack_cmd, sizeof(ack_cmd));
-                    CameraServer::sendClientMessage("#synced");
-                    return;
-                }
-
-                byte_num = 0;
-            }
+        if(!received_ack && memcmp(reply, ack_reply, sizeof(ack_reply))){
+            CameraServer::sendClientMessage("Received ACK: ");
+            CameraServer::sendClientCommand(reply);
+            received_ack = true;
+        }
+        else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
+            CameraServer::sendClientMessage("Received SYNC: ");
+            CameraServer::sendClientCommand(reply);
+            Serial.write(ack_cmd, sizeof(ack_cmd));
+            CameraServer::sendClientMessage("#synced");
+            return;
         }
 
         yield();
@@ -101,29 +106,22 @@ void CameraCommands::parseInitialisationParameters(const char* command){
 }
 
 void CameraCommands::attemptInitialisation(const byte* init_cmd){
-    byte reply[NUM_BYTES_IN_CMD];
     byte ack_reply[] = {0xAA, 0x0E, 0x01};
-    int byte_num = 0;
+    byte reply[NUM_BYTES_IN_CMD];
 
     CameraServer::sendClientMessage("Attempting initialisation with command: ");
     CameraServer::sendClientCommand(init_cmd);
 
     Serial.write(init_cmd, sizeof(init_cmd));
 
-    while(Serial.available() > 0){
-        reply[byte_num] = Serial.read();
-        byte_num++;
+    receiveCameraResponse(reply);
 
-        if(byte_num == NUM_BYTES_IN_CMD){
-            if(memcmp(reply, ack_reply, sizeof(ack_reply))){
-                CameraServer::sendClientMessage("Received ACK: ");
-                CameraServer::sendClientCommand(reply);
-                CameraServer::sendClientMessage("#initialised");
-                return;
-            }
+    if(memcmp(reply, ack_reply, sizeof(ack_reply))){
+        CameraServer::sendClientMessage("Received ACK: ");
+        CameraServer::sendClientCommand(reply);
 
-            byte_num = 0;
-        }
+        CameraServer::sendClientMessage("#initialised");
+        return;
     }
     
     CameraServer::sendClientMessage("Failed to initialise\n\n");

@@ -12,6 +12,7 @@
 
 class CameraCommands{
     private:
+        static void receiveCameraResponse(byte* reply);
         static void attemptInitialisation(const byte* init_cmd);
     public:
         void attemptSync();
