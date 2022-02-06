@@ -61,7 +61,7 @@ void CameraServer::sendClientMessage(const char* message){
 }
 
 void CameraServer::sendClientCommand(const byte cmd[]){
-  char values[36];
+  char values[CMD_CLIENT_MESSAGE_SIZE];
   sprintf(values, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n", cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
   webSocket.broadcastTXT(values, strlen(values));
 }

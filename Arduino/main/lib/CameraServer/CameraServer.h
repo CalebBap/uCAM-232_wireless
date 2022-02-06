@@ -9,6 +9,8 @@
 #include "..\FileOperations\FileOperations.h"
 #include "..\CameraCommands\CameraCommands.h"
 
+#define CMD_CLIENT_MESSAGE_SIZE 37
+
 class CameraServer{
     public:
         void initialise();
