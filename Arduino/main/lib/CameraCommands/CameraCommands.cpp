@@ -53,6 +53,7 @@ void CameraCommands::attemptSync(){
 
 void CameraCommands::parseInitialisationParameters(const char* command){
     byte init_cmd[]= {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
+    bool set_package_size = false;
 
     static std::map<std::string, byte> ColourTypes = {  
                                                 {"2GS", 0x01}, {"4GS", 0x02}, {"8GS", 0x03},
@@ -93,6 +94,7 @@ void CameraCommands::parseInitialisationParameters(const char* command){
 
     if( (strcmp(parameter_1, "J") == 0) && (JpegResolutions.find(parameter_2) != JpegResolutions.end()) ){
         init_cmd[5] = JpegResolutions[parameter_2];
+        set_package_size = true;
     }
     else if(RawResolutions.find(parameter_2) != RawResolutions.end()){
         init_cmd[4] = RawResolutions[parameter_2];
@@ -102,10 +104,10 @@ void CameraCommands::parseInitialisationParameters(const char* command){
         return;
     }
 
-    attemptInitialisation(init_cmd);
+    attemptInitialisation(init_cmd, set_package_size);
 }
 
-void CameraCommands::attemptInitialisation(const byte* init_cmd){
+void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_package_size){
     byte ack_reply[] = {0xAA, 0x0E, 0x01};
     byte reply[NUM_BYTES_IN_CMD];
 
@@ -120,10 +122,37 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd){
         CameraServer::sendClientMessage("Received ACK: ");
         CameraServer::sendClientCommand(reply);
 
+        if(set_package_size && !setPackageSize()){
+            CameraServer::sendClientMessage("#init_failed");
+            return;
+        }
+
         CameraServer::sendClientMessage("#initialised");
         return;
     }
     
     CameraServer::sendClientMessage("Failed to initialise\n\n");
     CameraServer::sendClientMessage("#init_failed");
+}
+
+bool CameraCommands::setPackageSize(){
+    byte ack_reply[] = {0xAA, 0x0E, 0x06};
+    byte package_size_cmd[] = {0xAA, 0x06, 0x08, 0x00, 0x02, 0x00};
+    byte reply[NUM_BYTES_IN_CMD];
+
+    CameraServer::sendClientMessage("Attempting to set package size with command: ");
+    CameraServer::sendClientCommand(package_size_cmd);
+
+    Serial.write(package_size_cmd, sizeof(package_size_cmd));
+    
+    receiveCameraResponse(reply);
+
+    if(memcmp(reply, ack_reply, sizeof(ack_reply))){
+        CameraServer::sendClientMessage("Package size set to 512 bytes\n\n");
+        return true;
+    }
+    else{
+        CameraServer::sendClientMessage("Failed to set package size\n\n");
+        return false;
+    }
 }

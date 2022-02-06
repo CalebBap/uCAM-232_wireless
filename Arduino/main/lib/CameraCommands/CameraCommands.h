@@ -13,7 +13,8 @@
 class CameraCommands{
     private:
         static void receiveCameraResponse(byte* reply);
-        static void attemptInitialisation(const byte* init_cmd);
+        static void attemptInitialisation(const byte* init_cmd, bool set_package_size);
+        static bool setPackageSize();
     public:
         void attemptSync();
         void parseInitialisationParameters(const char* command);
