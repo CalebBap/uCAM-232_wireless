@@ -20,6 +20,12 @@ class Controller{
             case "#synced":
                 model.fsm(1);
                 break;
+            case "#init_failed":
+                model.fsm(-1); //TODO
+                break;
+            case "#initialised":
+                model.fsm(1);
+                break;
         }
     }
 
