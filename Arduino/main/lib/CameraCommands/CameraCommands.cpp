@@ -21,7 +21,7 @@ void CameraCommands::attemptSync(){
     
     bool received_ack = false;
 
-    CameraServer::sendClientMessage("Attempting to sync with command: ");
+    CameraServer::sendClientMessage("Attempting to sync: ");
     CameraServer::sendClientCommand(sync_cmd);
 
     for(int i = 0; i < MAX_SYNC_ATTEMPTS; i++){
@@ -89,6 +89,7 @@ void CameraCommands::parseInitialisationParameters(const char* command){
     }
     else{
         CameraServer::sendClientMessage("Invalid colour type parameter");
+        CameraServer::sendClientMessage("#init_failed");
         return;
     }
 
@@ -101,6 +102,7 @@ void CameraCommands::parseInitialisationParameters(const char* command){
     }
     else{
         CameraServer::sendClientMessage("Invalid resolution parameter");
+        CameraServer::sendClientMessage("#init_failed");
         return;
     }
 
@@ -111,7 +113,7 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_packag
     byte ack_reply[] = {0xAA, 0x0E, 0x01};
     byte reply[NUM_BYTES_IN_CMD];
 
-    CameraServer::sendClientMessage("Attempting initialisation with command: ");
+    CameraServer::sendClientMessage("Attempting initialisation: ");
     CameraServer::sendClientCommand(init_cmd);
 
     Serial.write(init_cmd, sizeof(init_cmd));
@@ -140,7 +142,7 @@ bool CameraCommands::setPackageSize(){
     byte package_size_cmd[] = {0xAA, 0x06, 0x08, 0x00, 0x02, 0x00};
     byte reply[NUM_BYTES_IN_CMD];
 
-    CameraServer::sendClientMessage("Attempting to set package size with command: ");
+    CameraServer::sendClientMessage("Attempting to set package size: ");
     CameraServer::sendClientCommand(package_size_cmd);
 
     Serial.write(package_size_cmd, sizeof(package_size_cmd));
