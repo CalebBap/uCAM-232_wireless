@@ -122,11 +122,11 @@ class Model{
                     view.waitForInit();
                 }
                 else{
-                    view.showInitialiseControls();
+                    this.fsm(-1);
                 }
                 break;
             case 4:
-                console.log("Initialisation succeeded"); //TODO
+                view.showGetPictureControls();
                 break;
         }
     }
