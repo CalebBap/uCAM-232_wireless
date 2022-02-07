@@ -15,13 +15,13 @@ class Controller{
     handleCommand(command){
         switch(command){
             case "#sync_failed":
-                model.fsm(-1); //TODO
+                model.fsm(-1);
                 break;
             case "#synced":
                 model.fsm(1);
                 break;
             case "#init_failed":
-                model.fsm(-1); //TODO
+                model.fsm(-1);
                 break;
             case "#initialised":
                 model.fsm(1);
