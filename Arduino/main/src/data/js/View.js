@@ -26,6 +26,8 @@ class View{
     }
 
     showInitialiseControls(){
+        document.getElementById("get_picture_options").style.display = "none";
+
         document.getElementById("sync_status").innerText = "Synced";
         document.getElementById("sync_status").style = "color: limegreen";
         document.getElementById("sync_text").style.display = "none";
@@ -33,7 +35,15 @@ class View{
         document.getElementById("initialise_options").style.display = "flex";
         document.getElementById("control_title").innerText = "Initialise Camera";
 
+        this.setSelectionState("colour_type", true);
+        document.getElementById("colour_type").value = "";
+        this.setSelectionState("raw_resolutions", true);
+        document.getElementById("raw_resolutions").value = "";
+        this.setSelectionState("jpeg_resolutions", true);
+        document.getElementById("jpeg_resolutions").value = "";
+
         this.setButtonState("prev_control", "prev_control_bttn", true);
+        this.setButtonState("next_control", "next_control_bttn", true);
     }
 
     waitForInit(){
