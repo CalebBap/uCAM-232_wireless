@@ -126,6 +126,9 @@ class Model{
                 }
                 break;
             case 4:
+                view.showSnapshotControls();
+                break;
+            case 5:
                 view.showGetPictureControls();
                 break;
         }
