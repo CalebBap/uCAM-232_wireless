@@ -68,25 +68,40 @@
                         </select>
                     </div>
 
+                    <div id="snapshot_options">
+                        <div id="snapshot_checkbox">
+                            <label for="get_snapshot">Take a snapshot: </label>
+                            <input type="checkbox" id="get_snapshot_input" name="get_snapshot" value="yes" autocomplete="off">
+                        </div>
+                        
+                        <div id="skip_frames_inputs">
+                            <label for="num_skip_frame">Skip frames:</label>
+                            <input type="number" id="snapshot_skip_frames" name="num_skip_frame" size="3" value="0" min="0" autocomplete="off">
+                        </div>
+                    </div>
+
                     <div id="get_picture_options">
-                        <label for="get_snapshot">Get a snapshot: </label>
-                        <input type="checkbox" id="get_snapshot_input" name="get_snapshot" value="yes">
-                        
-                        <label for="num_skip_frame">Skip frames: </label>
-                        <input type="number" id="snapshot_skip_frames" name="num_skip_frame" size="2">
-                        
-                        <p>Get picture: <p><br>
-                        <input type="radio" id="get_snapshot" name="get_snapshot" value="snapshot">
-                        <label for="get_snapshot">Snapshot picture</label>
-                        <br>
-                        <input type="radio" id="get_raw" name="get_raw" value="raw">
-                        <label for="get_raw">RAW picture</label>
-                        <br>
-                        <input type="radio" id="get_jpeg" name="get_jpeg" value="jpeg">
-                        <label for="get_jpeg">JPEG picture</label>
-                        <br>
-                        <input type="radio" id="get_video" name="get_video" value="video">
-                        <label for="get_video">Video</label>
+                        <div id="get_picture_options_radioboxes">
+                            <div>
+                                <input type="radio" id="get_snapshot" name="get_picture_type" value="snapshot">
+                                <label for="get_snapshot">Snapshot picture</label>
+                            </div>
+                            <br>
+                            <div>
+                                <input type="radio" id="get_raw" name="get_picture_type" value="raw">
+                                <label for="get_raw">RAW picture</label>
+                            </div>
+                            <br>
+                            <div>
+                                <input type="radio" id="get_jpeg" name="get_picture_type" value="jpeg">
+                                <label for="get_jpeg">JPEG picture</label>
+                            </div>
+                            <br>
+                            <div>
+                                <input type="radio" id="get_video" name="get_picture_type" value="video">
+                                <label for="get_video">Video</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
