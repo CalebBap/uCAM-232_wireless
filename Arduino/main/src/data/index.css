@@ -136,6 +136,75 @@ select{
     text-align: center;
 }
 
+#snapshot_options{
+    width: 100%;
+    height: 100%;
+    margin-top: 0px;
+    display: none;
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#skip_frames_inputs{
+    margin-top: 3%;
+}
+
+#snapshot_checkbox{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3%;
+    border: none;
+}
+
+#get_snapshot_input{
+    width: calc(0.6em + 1vmin);
+}
+
+#get_snapshot_input:not(:checked){
+    background-color: #282828;
+}
+
+#get_snapshot_input:checked{
+    accent-color: limegreen;
+}
+
+#snapshot_skip_frames{
+    text-align: center;
+
+    border: none;
+    background-color: #282828;
+    color: limegreen;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(0.6em + 1vmin);
+    font-weight: 400;
+}
+
+#snapshot_skip_frames::-webkit-outer-spin-button,
+#snapshot_skip_frames::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#snapshot_skip_frames{
+    -moz-appearance: textfield;
+}
+
+#get_picture_options{
+    width: 100%;
+    height: 100%;
+    margin-top: 0px;
+    display: none;
+}
+
+#get_picture_options_radioboxes{
+    margin: auto;
+    flex-direction: column;
+    justify-content: center;
+}
+
 #next_control{
     margin-top: auto;
     margin-bottom: auto;
