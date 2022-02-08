@@ -26,7 +26,7 @@ class View{
     }
 
     showInitialiseControls(){
-        document.getElementById("get_picture_options").style.display = "none";
+        document.getElementById("snapshot_options").style.display = "none";
 
         document.getElementById("sync_status").innerText = "Synced";
         document.getElementById("sync_status").style = "color: limegreen";
@@ -53,6 +53,27 @@ class View{
         this.setSelectionState("colour_type", false);
         this.setSelectionState("raw_resolutions", false);
         this.setSelectionState("jpeg_resolutions", false);
+    }
+
+    showSnapshotControls(){
+        document.getElementById("initialise_options").style.display = "none";
+        document.getElementById("get_picture_options").style.display = "none";
+        document.getElementById("snapshot_options").style.display = "flex";
+        document.getElementById("control_title").innerText = "Take Snapshot?";
+
+        document.getElementById("get_snapshot_input").checked = false;
+
+        this.setButtonState("prev_control", "prev_control_bttn", true);
+        this.setButtonState("next_control", "next_control_bttn", true);
+    }
+
+    showGetPictureControls(){
+        document.getElementById("snapshot_options").style.display = "none";
+        document.getElementById("get_picture_options").style.display = "flex";
+        document.getElementById("control_title").innerText = "Get Picture";
+
+        this.setButtonState("prev_control", "prev_control_bttn", true);
+        this.setButtonState("next_control", "next_control_bttn", true);
     }
 
     setButtonState(div_id, button_id, enable){
