@@ -88,7 +88,9 @@ void CameraCommands::parseInitialisationParameters(const char* command){
         init_cmd[3] = ColourTypes[parameter_1];
     }
     else{
-        CameraServer::sendClientMessage("Invalid colour type parameter");
+        CameraServer::sendClientMessage("Invalid colour type parameter\n\n");
+        CameraServer::sendClientMessage(parameter_1);
+        CameraServer::sendClientMessage("\n\n");
         CameraServer::sendClientMessage("#init_failed");
         return;
     }
@@ -101,7 +103,9 @@ void CameraCommands::parseInitialisationParameters(const char* command){
         init_cmd[4] = RawResolutions[parameter_2];
     }
     else{
-        CameraServer::sendClientMessage("Invalid resolution parameter");
+        CameraServer::sendClientMessage("Invalid resolution parameter\n\n");
+        CameraServer::sendClientMessage(parameter_2);
+        CameraServer::sendClientMessage("\n\n");
         CameraServer::sendClientMessage("#init_failed");
         return;
     }
