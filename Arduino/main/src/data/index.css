@@ -148,7 +148,8 @@ select{
     text-align: center;
 }
 
-#skip_frames_inputs{
+#skip_frames_input{
+    display: none;
     margin-top: 3%;
 }
 
@@ -173,6 +174,7 @@ select{
 
 #snapshot_skip_frames{
     text-align: center;
+    padding-top: 1.5%;
 
     border: none;
     background-color: #282828;

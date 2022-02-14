@@ -35,6 +35,17 @@ class Controller{
         let jpeg_res_value = document.getElementById("jpeg_resolutions").value;
         model.initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value);
     }
+
+    handleSnapshotSelection(){
+        let snapshot_checkbox = document.getElementById("get_snapshot_input");
+
+        if(snapshot_checkbox.checked){
+            view.showSnapshotSkipFrames(true);
+        }
+        else{
+            view.showSnapshotSkipFrames(false);
+        }
+    }
     
     handleClearBttn(){
         view.clearElementValue("response_console");

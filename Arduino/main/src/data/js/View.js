@@ -62,9 +62,19 @@ class View{
         document.getElementById("control_title").innerText = "Take Snapshot?";
 
         document.getElementById("get_snapshot_input").checked = false;
+        this.showSnapshotSkipFrames(false);
 
         this.setButtonState("prev_control", "prev_control_bttn", true);
         this.setButtonState("next_control", "next_control_bttn", true);
+    }
+
+    showSnapshotSkipFrames(display){
+        if(display){
+            document.getElementById("skip_frames_input").style.display = "inherit";
+        }
+        else{
+            document.getElementById("skip_frames_input").style.display = "none";
+        }
     }
 
     showGetPictureControls(){
