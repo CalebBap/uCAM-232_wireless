@@ -91,6 +91,35 @@ class Model{
         }
     }
 
+    isSnapshotSelected(){
+        let snapshot_checkbox = document.getElementById("get_snapshot_input");
+
+        if(snapshot_checkbox.checked){
+            return true;
+        }
+        return false;
+    }
+
+    snapshotCmd(){
+        const integer_regex = new RegExp("^[1-9][0-9]*$");
+        let num_skip_frames = document.getElementById("snapshot_skip_frames").value;
+        
+        if(!integer_regex.test(num_skip_frames)){
+            alert("Invalid number of frames to skip.");
+            return false;
+        }
+
+        try{
+            this.socket.send("#snapshot:" + num_skip_frames);
+        }
+        catch(error){
+            console.error(error);
+            return false;
+        }
+
+        return true;
+    }
+
     fsm(value){
         this.fsm_state += value;
         if(this.fsm_state < 0){
@@ -129,6 +158,27 @@ class Model{
                 view.showSnapshotControls();
                 break;
             case 5:
+                if(nextBttnPressed){
+                    if(this.isSnapshotSelected()){
+                        if(this.snapshotCmd()){
+                            view.waitForSnapshotCmd(true);
+                        }
+                        else{
+                            this.fsm(-1);
+                        }
+                    }
+                    else{
+                        this.fsm(1);
+                    }
+                }
+                else{
+                    this.fsm(-1);
+                }
+                break;
+            case 6:
+                if(nextBttnPressed){
+                    view.waitForSnapshotCmd(false);
+                }
                 view.showGetPictureControls();
                 break;
         }

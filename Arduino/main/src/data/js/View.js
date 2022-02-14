@@ -77,6 +77,19 @@ class View{
         }
     }
 
+    waitForSnapshotCmd(waiting){
+        if(waiting){
+            this.setButtonState("next_control", "next_control_bttn", false);
+            document.getElementById("snapshot_skip_frames").disabled = true;
+            document.getElementById("skip_frames_input").style.opacity = "0.5";
+        }
+        else{
+            this.setButtonState("next_control", "next_control_bttn", true);
+            document.getElementById("snapshot_skip_frames").disabled = false;
+            document.getElementById("skip_frames_input").style.opacity = "1";
+        }
+    }
+
     showGetPictureControls(){
         document.getElementById("snapshot_options").style.display = "none";
         document.getElementById("get_picture_options").style.display = "flex";
