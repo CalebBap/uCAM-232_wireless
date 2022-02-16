@@ -46,6 +46,19 @@ class Controller{
             view.showSnapshotSkipFrames(false);
         }
     }
+
+    validateSkipFramesInput(){
+        const integer_regex = new RegExp("^(0|[1-9][0-9]*)$");
+        
+        let num_skip_frames = document.getElementById("snapshot_skip_frames").value;
+        
+        if(!integer_regex.test(num_skip_frames)){
+            alert("Invalid number of frames entered.");
+            return false;
+        }
+
+        return true;
+    }
     
     handleClearBttn(){
         view.clearElementValue("response_console");

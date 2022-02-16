@@ -71,12 +71,12 @@
                     <div id="snapshot_options">
                         <div id="snapshot_checkbox">
                             <label for="get_snapshot">Take a snapshot: </label>
-                            <input type="checkbox" id="get_snapshot_input" name="get_snapshot" onclick="controller.handleSnapshotSelection()" autocomplete="off">
+                            <input type="checkbox" id="get_snapshot_input" name="get_snapshot" autocomplete="off" onclick="controller.handleSnapshotSelection()">
                         </div>
                         
                         <div id="skip_frames_input">
                             <label for="num_skip_frame">Skip frames:</label>
-                            <input type="number" id="snapshot_skip_frames" name="num_skip_frame" size="3" value="0" min="0" autocomplete="off">
+                            <input type="number" id="snapshot_skip_frames" name="num_skip_frame" size="3" min="0" autocomplete="off" onclick="this.value = ''">
                         </div>
                     </div>
 

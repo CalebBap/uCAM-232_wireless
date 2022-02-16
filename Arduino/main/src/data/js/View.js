@@ -62,6 +62,9 @@ class View{
         document.getElementById("control_title").innerText = "Take Snapshot?";
 
         document.getElementById("get_snapshot_input").checked = false;
+        document.getElementById("snapshot_skip_frames").disabled = false;
+        document.getElementById("snapshot_skip_frames").value = "0";
+        document.getElementById("skip_frames_input").style.opacity = "1";
         this.showSnapshotSkipFrames(false);
 
         this.setButtonState("prev_control", "prev_control_bttn", true);
@@ -77,17 +80,10 @@ class View{
         }
     }
 
-    waitForSnapshotCmd(waiting){
-        if(waiting){
-            this.setButtonState("next_control", "next_control_bttn", false);
-            document.getElementById("snapshot_skip_frames").disabled = true;
-            document.getElementById("skip_frames_input").style.opacity = "0.5";
-        }
-        else{
-            this.setButtonState("next_control", "next_control_bttn", true);
-            document.getElementById("snapshot_skip_frames").disabled = false;
-            document.getElementById("skip_frames_input").style.opacity = "1";
-        }
+    waitForSnapshotCmd(){
+        this.setButtonState("next_control", "next_control_bttn", false);
+        document.getElementById("snapshot_skip_frames").disabled = true;
+        document.getElementById("skip_frames_input").style.opacity = "0.5";
     }
 
     showGetPictureControls(){
