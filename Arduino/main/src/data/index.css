@@ -174,7 +174,7 @@ select{
 
 #snapshot_skip_frames{
     text-align: center;
-    padding-top: 1.5%;
+    margin-left: 4px;
 
     border: none;
     background-color: #282828;
