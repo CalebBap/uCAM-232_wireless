@@ -122,7 +122,7 @@ class View{
     addConsoleText(text){
         response_console =  document.getElementById("response_console");
         response_console.value += text;
-        console.scrollTop = console.scrollHeight;
+        response_console.scrollTop = response_console.scrollHeight;
     }
 
     clearElementValue(id){
