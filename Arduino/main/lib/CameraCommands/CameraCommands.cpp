@@ -83,6 +83,7 @@ void CameraCommands::parseInitialisationParameters(const char* command){
     strncpy(parameter_1, start_parameter_1, parameter_1_length);
     parameter_1[sizeof(parameter_1) - 1] = '\0';
     strncpy(parameter_2, start_parameter_2, parameter_2_length);
+    parameter_2[parameter_2_length] = '\0';
 
     if(ColourTypes.find(parameter_1) != ColourTypes.end()){
         init_cmd[3] = ColourTypes[parameter_1];
