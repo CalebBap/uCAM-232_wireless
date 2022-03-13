@@ -1,6 +1,7 @@
 #ifndef CameraCommands_h
 #define CameraCommands_h
 
+#include <stdexcept>
 #include <map>
 #include <string>
 #include "..\CameraServer\CameraServer.h"
@@ -14,9 +15,11 @@ class CameraCommands{
         static void receiveCameraResponse(byte* reply);
         static void attemptInitialisation(const byte* init_cmd, bool set_package_size);
         static bool setPackageSize();
+        static void getSnapshot(int num_frames);
     public:
         void attemptSync();
         void parseInitialisationParameters(const char* command);
+        void parseSnapshotParameters(const char* command);
 };
 
 #endif
