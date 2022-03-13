@@ -1,7 +1,6 @@
 #ifndef CameraCommands_h
 #define CameraCommands_h
 
-#include <Arduino.h>
 #include <map>
 #include <string>
 #include "..\CameraServer\CameraServer.h"

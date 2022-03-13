@@ -1,7 +1,6 @@
 #ifndef FileOperations_h
 #define FileOperations_h
 
-#include <Arduino.h>
 #include <FS.h>
 
 class FileOperations{

@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "../lib/CameraServer/CameraServer.h"
 
 #define BAUD_RATE 115200
