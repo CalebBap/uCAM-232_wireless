@@ -1,10 +1,7 @@
 .pio
 .vscode/
-Arduino/main/.gitignore
+codebase/.gitignore
 
 Reference Material/
+progress/
 Credentials.h
-
-Arduino/WebServerSPIFFS.cpp
-Arduino/WebServerSPIFFS.h
-Arduino/temp/
