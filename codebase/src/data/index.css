@@ -1,16 +1,16 @@
-html{
+html {
     width: 100vw;
     height: 100vh;
 }
 
-body{
+body {
     width: 100%;
     height: 100%;
     margin: 0px;
     background-color: #151515;
 }
 
-h1{
+h1 {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -23,7 +23,7 @@ h1{
     color: limegreen;
 }
 
-h2{    
+h2 {
     width: 100vw;
     text-align: center;
     margin: 3vmin auto 3vmin auto;
@@ -34,14 +34,14 @@ h2{
     color: white;
 }
 
-p, label{
+p, label {
     color: white;
     font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-size: calc(0.7em + 1vmin);
     font-weight: 400;
 }
 
-select{
+select {
     max-width: 80%;
     margin: 1vh auto 2vh auto;
     padding: 0.5em;
@@ -54,7 +54,7 @@ select{
     font-weight: 400;
 }
 
-#loading_content{
+#loading_content {
     width: 100%;
     height: 100%;
     display: flex;
@@ -63,17 +63,17 @@ select{
     text-align: center;
 }
 
-#loading_text{
+#loading_text {
     margin: 0px;
 }
 
-#main_content{
+#main_content {
     width: 100%;
     height: 100%;
     display: none;
 }
 
-#controls_div{
+#controls_div {
     margin: 1.5vmin auto 1.5vmin auto;
     height: 30vh;
     display: flex;
@@ -81,50 +81,50 @@ select{
     align-items: center;
 }
 
-#prev_control{
+#prev_control {
     margin-top: auto;
     margin-bottom: auto;
     padding-right: 2vh;
     text-align: center;
 }
 
-#prev_control_bttn{
+#prev_control_bttn {
     height: 4vmax;
 }
 
-#prev_control_bttn:hover{
+#prev_control_bttn:hover {
     opacity: 0.8;
 }
 
-#prev_control_bttn:active{
+#prev_control_bttn:active {
     opacity: 0.5;
 }
 
-#prev_control_text{
+#prev_control_text {
     font-weight: 700;
     margin: 0%;
     padding-top: 0.5em;
 }
 
-#control_content{
+#control_content {
     height: 25vh;
     width: 40vmin;
     display: flex;
     flex-direction: column;
 }
 
-#sync_text{
+#sync_text {
     margin-top: auto;
     margin-bottom: auto;
 
     text-align: center;
 }
 
-#sync_status{
+#sync_status {
     color: red;
 }
 
-#initialise_options{
+#initialise_options {
     width: 100%;
     height: 100%;
     margin-top: 0px;
@@ -136,7 +136,7 @@ select{
     text-align: center;
 }
 
-#snapshot_options{
+#snapshot_options {
     width: 100%;
     height: 100%;
     margin-top: 0px;
@@ -148,31 +148,31 @@ select{
     text-align: center;
 }
 
-#skip_frames_input{
+#skip_frames_input {
     display: none;
     margin-top: 3%;
 }
 
-#snapshot_checkbox{
+#snapshot_checkbox {
     display: flex;
     flex-direction: row;
     margin-bottom: 3%;
     border: none;
 }
 
-#get_snapshot_input{
+#get_snapshot_input {
     width: calc(0.6em + 1vmin);
 }
 
-#get_snapshot_input:not(:checked){
+#get_snapshot_input:not(:checked) {
     background-color: #282828;
 }
 
-#get_snapshot_input:checked{
+#get_snapshot_input:checked {
     accent-color: limegreen;
 }
 
-#snapshot_skip_frames{
+#snapshot_skip_frames {
     text-align: center;
     margin-left: 4px;
 
@@ -190,55 +190,55 @@ select{
     margin: 0;
 }
 
-#snapshot_skip_frames{
+#snapshot_skip_frames {
     -moz-appearance: textfield;
 }
 
-#get_picture_options{
+#get_picture_options {
     width: 100%;
     height: 100%;
     margin-top: 0px;
     display: none;
 }
 
-#get_picture_options_radioboxes{
+#get_picture_options_radioboxes {
     margin: auto;
     flex-direction: column;
     justify-content: center;
 }
 
-#next_control{
+#next_control {
     margin-top: auto;
     margin-bottom: auto;
     padding-left: 2vh;
     text-align: center;
 }
 
-#next_control_bttn{
+#next_control_bttn {
     height: 4vmax;
 }
 
-#next_control_bttn:hover{
+#next_control_bttn:hover {
     opacity: 0.8;
 }
 
-#next_control_bttn:active{
+#next_control_bttn:active {
     opacity: 0.5;
 }
 
-#next_control_text{
+#next_control_text {
     font-weight: 700;
     margin: 0%;
     padding-top: 0.5em;
 }
 
-#console_div{
+#console_div {
     height: 35vh;
     width: 50vw;
     margin: 1.5vmin auto 1.5vmin auto;
 }
 
-#response_console{
+#response_console {
     height: 100%;
     width: 100%;
     margin-left: auto;
@@ -253,7 +253,7 @@ select{
     border: none;
 }
 
-#clear_terminal_bttn{
+#clear_terminal_bttn {
     margin-top: 1vh;
     padding: 0.75em;
 
@@ -265,6 +265,6 @@ select{
     border: 0.3em solid #282828;
 }
 
-#clear_terminal_bttn:active{
+#clear_terminal_bttn:active {
     opacity: 0.5;
 }

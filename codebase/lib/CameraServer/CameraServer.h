@@ -10,7 +10,7 @@
 
 #define CMD_CLIENT_MESSAGE_SIZE 37
 
-class CameraServer{
+class CameraServer {
     public:
         void initialise();
         void handleWifi();

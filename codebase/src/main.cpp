@@ -5,7 +5,7 @@
 
 CameraServer cameraServer;
 
-void setup(){
+void setup() {
   Serial.setRxBufferSize(SERIAL_RX_BUFFER_SIZE); // increase RX buffer size to avoid overhead when transmitting JPEG image data
   Serial.begin(BAUD_RATE);
   delay(10);
@@ -13,6 +13,6 @@ void setup(){
   cameraServer.initialise();  
 }
 
-void loop(){
+void loop() {
   cameraServer.handleWifi();
 }

@@ -1,19 +1,19 @@
 #include "CameraCommands.h"
 
-void CameraCommands::receiveCameraResponse(byte* reply){
+void CameraCommands::receiveCameraResponse(byte* reply) {
     int byte_num = 0;
 
-    while(Serial.available() > 0){
+    while (Serial.available() > 0) {
         reply[byte_num] = Serial.read();
         byte_num++;
 
-        if(byte_num == NUM_BYTES_IN_CMD){
+        if (byte_num == NUM_BYTES_IN_CMD) {
             break;
         }
     }
 }
 
-void CameraCommands::attemptSync(){
+void CameraCommands::attemptSync() {
     byte sync_cmd[] = {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};
     byte ack_cmd[] = {0xAA, 0x0E, 0x0D, 0x00, 0x00, 0x00};
     byte ack_reply[] = {0xAA, 0x0E, 0x0D};
@@ -24,19 +24,19 @@ void CameraCommands::attemptSync(){
     CameraServer::sendClientMessage("Attempting to sync: ");
     CameraServer::sendClientCommand(sync_cmd);
 
-    for(int i = 0; i < MAX_SYNC_ATTEMPTS; i++){
+    for (int i = 0; i < MAX_SYNC_ATTEMPTS; i++) {
         Serial.write(sync_cmd, sizeof(sync_cmd));
         
         delay(MIN_SYNC_DELAY + i);
 
         receiveCameraResponse(reply);
 
-        if(!received_ack && memcmp(reply, ack_reply, sizeof(ack_reply))){
+        if (!received_ack && memcmp(reply, ack_reply, sizeof(ack_reply))) {
             CameraServer::sendClientMessage("Received ACK: ");
             CameraServer::sendClientCommand(reply);
             received_ack = true;
         }
-        else if(received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))){
+        else if (received_ack && memcmp(reply, sync_cmd, sizeof(sync_cmd))) {
             CameraServer::sendClientMessage("Received SYNC: ");
             CameraServer::sendClientCommand(reply);
             Serial.write(ack_cmd, sizeof(ack_cmd));
@@ -51,7 +51,7 @@ void CameraCommands::attemptSync(){
     CameraServer::sendClientMessage("#sync_failed");
 }
 
-void CameraCommands::parseInitialisationParameters(const char* command){
+void CameraCommands::parseInitialisationParameters(const char* command) {
     byte init_cmd[]= {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
     bool set_package_size = false;
 
@@ -85,10 +85,10 @@ void CameraCommands::parseInitialisationParameters(const char* command){
     strncpy(parameter_2, start_parameter_2, parameter_2_length);
     parameter_2[parameter_2_length] = '\0';
 
-    if(ColourTypes.find(parameter_1) != ColourTypes.end()){
+    if (ColourTypes.find(parameter_1) != ColourTypes.end()) {
         init_cmd[3] = ColourTypes[parameter_1];
     }
-    else{
+    else {
         CameraServer::sendClientMessage("Invalid colour type parameter\n\n");
         CameraServer::sendClientMessage(parameter_1);
         CameraServer::sendClientMessage("\n\n");
@@ -96,14 +96,14 @@ void CameraCommands::parseInitialisationParameters(const char* command){
         return;
     }
 
-    if( (strcmp(parameter_1, "J") == 0) && (JpegResolutions.find(parameter_2) != JpegResolutions.end()) ){
+    if ( (strcmp(parameter_1, "J") == 0) && (JpegResolutions.find(parameter_2) != JpegResolutions.end()) ) {
         init_cmd[5] = JpegResolutions[parameter_2];
         set_package_size = true;
     }
-    else if(RawResolutions.find(parameter_2) != RawResolutions.end()){
+    else if (RawResolutions.find(parameter_2) != RawResolutions.end()) {
         init_cmd[4] = RawResolutions[parameter_2];
     }
-    else{
+    else {
         CameraServer::sendClientMessage("Invalid resolution parameter\n\n");
         CameraServer::sendClientMessage(parameter_2);
         CameraServer::sendClientMessage("\n\n");
@@ -114,7 +114,7 @@ void CameraCommands::parseInitialisationParameters(const char* command){
     attemptInitialisation(init_cmd, set_package_size);
 }
 
-void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_package_size){
+void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_package_size) {
     byte ack_reply[] = {0xAA, 0x0E, 0x01};
     byte reply[NUM_BYTES_IN_CMD];
 
@@ -125,11 +125,11 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_packag
 
     receiveCameraResponse(reply);
 
-    if(memcmp(reply, ack_reply, sizeof(ack_reply))){
+    if (memcmp(reply, ack_reply, sizeof(ack_reply))) {
         CameraServer::sendClientMessage("Received ACK: ");
         CameraServer::sendClientCommand(reply);
 
-        if(set_package_size && !setPackageSize()){
+        if (set_package_size && !setPackageSize()) {
             CameraServer::sendClientMessage("#init_failed");
             return;
         }
@@ -142,7 +142,7 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_packag
     CameraServer::sendClientMessage("#init_failed");
 }
 
-bool CameraCommands::setPackageSize(){
+bool CameraCommands::setPackageSize() {
     byte ack_reply[] = {0xAA, 0x0E, 0x06};
     byte package_size_cmd[] = {0xAA, 0x06, 0x08, 0x00, 0x02, 0x00};
     byte reply[NUM_BYTES_IN_CMD];
@@ -154,11 +154,11 @@ bool CameraCommands::setPackageSize(){
     
     receiveCameraResponse(reply);
 
-    if(memcmp(reply, ack_reply, sizeof(ack_reply))){
+    if (memcmp(reply, ack_reply, sizeof(ack_reply))) {
         CameraServer::sendClientMessage("Package size set to 512 bytes\n\n");
         return true;
     }
-    else{
+    else {
         CameraServer::sendClientMessage("Failed to set package size\n\n");
         return false;
     }

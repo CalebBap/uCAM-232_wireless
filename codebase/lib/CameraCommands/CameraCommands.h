@@ -10,7 +10,7 @@
 #define MAX_SYNC_ATTEMPTS 60
 #define MIN_SYNC_DELAY  5
 
-class CameraCommands{
+class CameraCommands {
     private:
         static void receiveCameraResponse(byte* reply);
         static void attemptInitialisation(const byte* init_cmd, bool set_package_size);

@@ -17,7 +17,7 @@ const char * ackCmd = "#ack";
 const char * nakCmd = "#nak";
 const char * lightCmd = "#light";
 
-void CameraServer::initialise(){
+void CameraServer::initialise() {
   IPAddress staticIP(10, 100, 0, 200);
   IPAddress gateway(10, 100, 0, 254);
   IPAddress subnet(255, 255, 255, 0);
@@ -25,7 +25,7 @@ void CameraServer::initialise(){
   WiFi.config(staticIP, gateway, subnet);
   WiFi.begin(WAN_NAME, PASSWORD);
 
-  while(WiFi.status() != WL_CONNECTED){
+  while (WiFi.status() != WL_CONNECTED) {
     yield();
   }
 
@@ -38,39 +38,42 @@ void CameraServer::initialise(){
   SPIFFS.begin();
 }
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   static CameraCommands cameraCommands;
 
-  if(type == WStype_TEXT){
-    if(memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0){
+  if (type == WStype_TEXT) {
+    if (memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0) {
       cameraCommands.attemptSync();
     }
-    else if(memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0){
+    else if (memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0) {
       cameraCommands.parseInitialisationParameters((char *)payload);
+    }
+    else if (memcmp((char *)payload, snapshotCmd, sizeof(snapshotCmd)) == 0) {
+      cameraCommands.parseSnapshotParameters((char *)payload);
     }
   }
 }
 
-void CameraServer::handleWifi(){
+void CameraServer::handleWifi() {
     webSocket.loop();
     server.handleClient();
 }
 
-void CameraServer::sendClientMessage(const char* message){
+void CameraServer::sendClientMessage(const char* message) {
   webSocket.broadcastTXT(message, strlen(message));
 }
 
-void CameraServer::sendClientCommand(const byte cmd[]){
+void CameraServer::sendClientCommand(const byte cmd[]) {
   char values[CMD_CLIENT_MESSAGE_SIZE];
   sprintf(values, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n", cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
   webSocket.broadcastTXT(values, strlen(values));
 }
 
-void CameraServer::sendFile(){
+void CameraServer::sendFile() {
   String path = FileOperations::getFilePath(server.uri());
   String mimeType = FileOperations::getMimeType(path);
 
-  if(path == ""){
+  if (path == "") {
       server.send(404, "text/plain", "404: Not Found");
       return;
   }

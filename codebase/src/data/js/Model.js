@@ -1,63 +1,63 @@
-class Model{
-    constructor(){
+class Model {
+    constructor() {
         this.socket = null;
         this.fsm_state = 0;
     }
 
-    connectWebSocket(){
+    connectWebSocket() {
         this.socket = new WebSocket('ws://10.100.0.200:81');
 
         var timer = setTimeout(function() {
             view.loadError();
         }, 5000);
 
-        this.socket.onerror = function(event){
+        this.socket.onerror = function(event) {
             clearTimeout(timer);
             view.loadError();
         }
 
-        this.socket.onopen = function(event){
+        this.socket.onopen = function(event) {
             clearTimeout(timer);
             view.loadSuccess();
         }
 
-        this.socket.onmessage = function(event){
+        this.socket.onmessage = function(event) {
             controller.handleWebSocketMessage(event.data);
         }
     }
 
-    closeWebSocket(){
+    closeWebSocket() {
         this.socket.close();
     }
 
-    syncCmd(){
-        try{
+    syncCmd() {
+        try {
             this.socket.send("#sync");
         }
-        catch(error){
+        catch (error) {
             console.error(error);
         }
     }
 
-    initCmd(){
+    initCmd() {
         let colour_type = document.getElementById("colour_type").value;
         let res_resolution = document.getElementById("raw_resolutions");
         let jpeg_resolution = document.getElementById("jpeg_resolutions");
 
         let resolution = (colour_type === "J") ? jpeg_resolution.value : res_resolution.value;
 
-        try{
+        try {
             this.socket.send("#init:" + colour_type + "," + resolution);
         }
-        catch(error){
+        catch (error) {
             console.error(error);
         }
     }
 
-    initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value){
+    initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value) {
         let all_options_selected = false;
 
-        if( (colour_value === "") || (colour_value === undefined) ){
+        if ( (colour_value === "") || (colour_value === undefined) ) {
             view.setSelectionState("raw_resolutions", false);
             view.clearElementValue("raw_resolutions");
 
@@ -66,7 +66,7 @@ class Model{
 
             all_options_selected = false;
         }
-        else if(colour_value === "J"){
+        else if (colour_value === "J") {
             view.setSelectionState("jpeg_resolutions", true);
 
             view.setSelectionState("raw_resolutions", false);
@@ -74,7 +74,7 @@ class Model{
 
             all_options_selected = (jpeg_res_value !== "");
         }
-        else{
+        else {
             view.setSelectionState("raw_resolutions", true);
 
             view.setSelectionState("jpeg_resolutions", false);
@@ -83,45 +83,45 @@ class Model{
             all_options_selected = (raw_res_value !== "");
         }
 
-        if(all_options_selected){
+        if (all_options_selected) {
             view.setButtonState("next_control", "next_control_bttn", true);
         }
-        else{
+        else {
             view.setButtonState("next_control", "next_control_bttn", false);
         }
     }
 
-    snapshotCmd(){
+    snapshotCmd() {
         let num_skip_frames = document.getElementById("snapshot_skip_frames").value;
     
-        try{
+        try {
             this.socket.send("#snapshot:" + num_skip_frames);
         }
-        catch(error){
+        catch (error) {
             console.error(error);
         }
 
         return true;
     }
 
-    fsm(value){
+    fsm(value) {
         this.fsm_state += value;
-        if(this.fsm_state < 0){
+        if (this.fsm_state < 0) {
             this.fsm_state = 0;
         }
 
         const nextBttnPressed = value == 1;
     
-        switch(this.fsm_state){
+        switch (this.fsm_state) {
             case 0:
                 view.showSyncControls();
                 break;
             case 1:
-                if(nextBttnPressed){
+                if (nextBttnPressed) {
                     this.syncCmd();
                     view.waitForSync();
                 }
-                else{
+                else {
                     view.showSyncControls();
                 }
                 break;
@@ -130,11 +130,11 @@ class Model{
                 this.initialiseOptionSelection();
                 break;
             case 3:
-                if(nextBttnPressed){
+                if (nextBttnPressed) {
                     this.initCmd();
                     view.waitForInit();
                 }
-                else{
+                else {
                     this.fsm(-1);
                 }
                 break;
@@ -144,19 +144,19 @@ class Model{
             case 5:
                 let getSnapshot = document.getElementById("get_snapshot_input").checked;
 
-                if(nextBttnPressed && getSnapshot){
-                    if(controller.validateSkipFramesInput()){
+                if (nextBttnPressed && getSnapshot) {
+                    if (controller.validateSkipFramesInput()) {
                         this.snapshotCmd();
                         view.waitForSnapshotCmd();
                     }
-                    else{
+                    else {
                         this.fsm(-1);
                     }
                 }
-                else if(nextBttnPressed){
+                else if (nextBttnPressed) {
                     this.fsm(1);
                 }
-                else{
+                else {
                     this.fsm(-1);
                 }
                 break;

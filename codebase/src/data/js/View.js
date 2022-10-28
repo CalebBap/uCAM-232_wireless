@@ -1,14 +1,14 @@
-class View{
-    loadError(){
+class View {
+    loadError() {
         document.getElementById("loading_text").innerHTML = "WebSocket failed to connect.<br> Please refresh the page to try again.";
     }
 
-    loadSuccess(){
+    loadSuccess() {
         document.getElementById("loading_content").style.display = "none";
         document.getElementById("main_content").style.display = "block";
     }
 
-    showSyncControls(){
+    showSyncControls() {
         document.getElementById("initialise_options").style.display = "none";
 
         document.getElementById("sync_text").style.display = "initial";
@@ -18,14 +18,14 @@ class View{
         this.setButtonState("next_control", "next_control_bttn", true);
     }
 
-    waitForSync(){
+    waitForSync() {
         this.setButtonState("next_control", "next_control_bttn", false);
 
         document.getElementById("sync_status").innerText = "...";
         document.getElementById("sync_status").style = "color:white";
     }
 
-    showInitialiseControls(){
+    showInitialiseControls() {
         document.getElementById("snapshot_options").style.display = "none";
 
         document.getElementById("sync_status").innerText = "Synced";
@@ -46,7 +46,7 @@ class View{
         this.setButtonState("next_control", "next_control_bttn", true);
     }
 
-    waitForInit(){
+    waitForInit() {
         this.setButtonState("prev_control", "prev_control_bttn", false);
         this.setButtonState("next_control", "next_control_bttn", false);
         
@@ -55,7 +55,7 @@ class View{
         this.setSelectionState("jpeg_resolutions", false);
     }
 
-    showSnapshotControls(){
+    showSnapshotControls() {
         document.getElementById("initialise_options").style.display = "none";
         document.getElementById("get_picture_options").style.display = "none";
         document.getElementById("snapshot_options").style.display = "flex";
@@ -71,22 +71,22 @@ class View{
         this.setButtonState("next_control", "next_control_bttn", true);
     }
 
-    showSnapshotSkipFrames(display){
-        if(display){
+    showSnapshotSkipFrames(display) {
+        if (display) {
             document.getElementById("skip_frames_input").style.display = "inherit";
         }
-        else{
+        else {
             document.getElementById("skip_frames_input").style.display = "none";
         }
     }
 
-    waitForSnapshotCmd(){
+    waitForSnapshotCmd() {
         this.setButtonState("next_control", "next_control_bttn", false);
         document.getElementById("snapshot_skip_frames").disabled = true;
         document.getElementById("skip_frames_input").style.opacity = "0.5";
     }
 
-    showGetPictureControls(){
+    showGetPictureControls() {
         document.getElementById("snapshot_options").style.display = "none";
         document.getElementById("get_picture_options").style.display = "flex";
         document.getElementById("control_title").innerText = "Get Picture";
@@ -95,37 +95,37 @@ class View{
         this.setButtonState("next_control", "next_control_bttn", true);
     }
 
-    setButtonState(div_id, button_id, enable){
-        if(enable){
+    setButtonState(div_id, button_id, enable) {
+        if (enable) {
             document.getElementById(button_id).style.pointerEvents = "auto";
             document.getElementById(button_id).disabled = false;
             document.getElementById(div_id).style.opacity = "1";
         }
-        else{
+        else {
             document.getElementById(button_id).style.pointerEvents = "none";
             document.getElementById(button_id).disabled = true;
             document.getElementById(div_id).style.opacity = "0.5";
         }
     }
 
-    setSelectionState(select_id, enable){
-        if(enable){
+    setSelectionState(select_id, enable) {
+        if (enable) {
             document.getElementById(select_id).disabled = false;
             document.getElementById(select_id).style.opacity = "1";
         }
-        else{
+        else {
             document.getElementById(select_id).disabled = true;
             document.getElementById(select_id).style.opacity = "0.5";
         }
     }
 
-    addConsoleText(text){
+    addConsoleText(text) {
         response_console =  document.getElementById("response_console");
         response_console.value += text;
         response_console.scrollTop = response_console.scrollHeight;
     }
 
-    clearElementValue(id){
+    clearElementValue(id) {
         document.getElementById(id).value = "";
     }
 }

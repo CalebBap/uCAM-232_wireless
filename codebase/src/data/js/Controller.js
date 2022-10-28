@@ -1,19 +1,19 @@
-class Controller{
-    handleWebSocketMessage(data){
-        if(data.charAt(0) == '#'){
+class Controller {
+    handleWebSocketMessage(data) {
+        if (data.charAt(0) == '#') {
             controller.handleCommand(data);
         }
-        else{
+        else {
             view.addConsoleText(data);
         }
     }
 
-    handleControlBttn(value){
+    handleControlBttn(value) {
         model.fsm(value);
     }
 
-    handleCommand(command){
-        switch(command){
+    handleCommand(command) {
+        switch (command) {
             case "#sync_failed":
                 model.fsm(-1);
                 break;
@@ -29,30 +29,30 @@ class Controller{
         }
     }
 
-    handleInitialiseSelection(){
+    handleInitialiseSelection() {
         let colour_value = document.getElementById("colour_type").value;
         let raw_res_value = document.getElementById("raw_resolutions").value;
         let jpeg_res_value = document.getElementById("jpeg_resolutions").value;
         model.initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value);
     }
 
-    handleSnapshotSelection(){
+    handleSnapshotSelection() {
         let snapshot_checkbox = document.getElementById("get_snapshot_input");
 
-        if(snapshot_checkbox.checked){
+        if (snapshot_checkbox.checked) {
             view.showSnapshotSkipFrames(true);
         }
-        else{
+        else {
             view.showSnapshotSkipFrames(false);
         }
     }
 
-    validateSkipFramesInput(){
+    validateSkipFramesInput() {
         const integer_regex = new RegExp("^(0|[1-9][0-9]*)$");
         
         let num_skip_frames = document.getElementById("snapshot_skip_frames").value;
         
-        if(!integer_regex.test(num_skip_frames)){
+        if (!integer_regex.test(num_skip_frames)) {
             alert("Invalid number of frames entered.");
             return false;
         }
@@ -60,7 +60,7 @@ class Controller{
         return true;
     }
     
-    handleClearBttn(){
+    handleClearBttn() {
         view.clearElementValue("response_console");
     }
 }

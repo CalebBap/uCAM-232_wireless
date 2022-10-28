@@ -3,7 +3,7 @@
 
 #include <FS.h>
 
-class FileOperations{
+class FileOperations {
     private:
 
     public:
