@@ -47,16 +47,6 @@ void CameraServer::handleWifi() {
     server.handleClient();
 }
 
-void CameraServer::sendClientMessage(const char* message) {
-  webSocket.broadcastTXT(message, strlen(message));
-}
-
-void CameraServer::sendClientCommand(const byte cmd[]) {
-  char values[CMD_CLIENT_MESSAGE_SIZE];
-  sprintf(values, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n", cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
-  webSocket.broadcastTXT(values, strlen(values));
-}
-
 void CameraServer::sendFile() {
   String path = FileOperations::getFilePath(server.uri());
   String mimeType = FileOperations::getMimeType(path);
