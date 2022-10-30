@@ -1,6 +1,7 @@
 #include "CameraCommands.h"
 #include <map>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 
 void CameraCommands::receiveCameraResponse(byte* reply) {
@@ -15,14 +16,19 @@ void CameraCommands::receiveCameraResponse(byte* reply) {
     }
 }
 
-void CameraCommands::sendClientMessage(const char* message) {
-  webSocket.broadcastTXT(message, strlen(message));
+void CameraCommands::sendClientMessage(std::string message) {
+  webSocket.broadcastTXT(message.c_str(), message.size());
 }
 
 void CameraCommands::sendClientCommand(const byte cmd[]) {
   char values[CMD_CLIENT_MESSAGE_SIZE];
-  sprintf(values, "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n", cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
+  snprintf(values, sizeof(values), "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n",\
+            cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
   webSocket.broadcastTXT(values, strlen(values));
+}
+
+void CameraCommands::unrecognisedCommand(std::string command) {
+    sendClientMessage("Unrecognised command: " + command);
 }
 
 void CameraCommands::attemptSync() {
@@ -63,61 +69,52 @@ void CameraCommands::attemptSync() {
     sendClientMessage("#sync_failed");
 }
 
-void CameraCommands::parseInitialisationParameters(const char* command) {
+void CameraCommands::parseInitialisationParameters(std::string command) {
     byte init_cmd[]= {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
     bool set_package_size = false;
 
-    static std::map<std::string, byte> ColourTypes = {  
+    static std::map<std::string_view, byte> ColourTypes = {  
                                                         {"2GS", 0x01}, {"4GS", 0x02}, {"8GS", 0x03},
                                                         {"8C", 0x04}, {"12C", 0x05}, {"16C", 0x06},
                                                         {"J", 0x07}
                                                     };
 
-    static std::map<std::string, byte> RawResolutions = { 
+    static std::map<std::string_view, byte> RawResolutions = { 
                                                             {"80x60", 0x01}, {"160x120", 0x03}, {"320x240", 0x05},
                                                             {"640x480", 0x07}, {"128x128", 0x09}, {"128x96", 0x0B}
                                                         };
 
-    static std::map<std::string, byte> JpegResolutions = {  
+    static std::map<std::string_view, byte> JpegResolutions = {  
                                                             {"80x64", 0x01}, {"160x128", 0x03}, {"320x240", 0x05},
                                                             {"640x480", 0x07}
                                                         };
 
-    const char *start_parameter_1 = strchr(command, ':') + 1;
-    const char *start_parameter_2 = strchr(command, ',') + 1;
+    command.erase(0, command.find(cmd_delimiter) + cmd_delimiter.size());
+    std::string_view colour_type = command.substr(0, command.find(value_delimiter));
+    command.erase(0, command.find(value_delimiter) + value_delimiter.size());
+    std::string_view resolution = command;
 
-    size_t parameter_1_length = start_parameter_2 - start_parameter_1;
-    size_t parameter_2_length = (command + strlen(command)) - start_parameter_2;
-    
-    char parameter_1[parameter_1_length];
-    char parameter_2[parameter_2_length];
-    
-    strncpy(parameter_1, start_parameter_1, parameter_1_length);
-    parameter_1[sizeof(parameter_1) - 1] = '\0';
-    strncpy(parameter_2, start_parameter_2, parameter_2_length);
-    parameter_2[parameter_2_length] = '\0';
-
-    if (ColourTypes.find(parameter_1) != ColourTypes.end()) {
-        init_cmd[3] = ColourTypes[parameter_1];
+    if (ColourTypes.find(colour_type) != ColourTypes.end()) {
+        init_cmd[3] = ColourTypes[colour_type];
     }
     else {
         sendClientMessage("Invalid colour type parameter\n\n");
-        sendClientMessage(parameter_1);
+        sendClientMessage(static_cast<std::string>(colour_type));
         sendClientMessage("\n\n");    // add to start of the below string?
         sendClientMessage("#init_failed");
         return;
     }
 
-    if ( (strcmp(parameter_1, "J") == 0) && (JpegResolutions.find(parameter_2) != JpegResolutions.end()) ) {
-        init_cmd[5] = JpegResolutions[parameter_2];
+    if ( (colour_type == "J") && (JpegResolutions.find(resolution) != JpegResolutions.end()) ) {
+        init_cmd[5] = JpegResolutions[resolution];
         set_package_size = true;
     }
-    else if (RawResolutions.find(parameter_2) != RawResolutions.end()) {
-        init_cmd[4] = RawResolutions[parameter_2];
+    else if (RawResolutions.find(resolution) != RawResolutions.end()) {
+        init_cmd[4] = RawResolutions[resolution];
     }
     else {
         sendClientMessage("Invalid resolution parameter\n\n");
-        sendClientMessage(parameter_2);
+        sendClientMessage(static_cast<std::string>(resolution));
         sendClientMessage("\n\n");    // add to start of the below string?
         sendClientMessage("#init_failed");
         return;
@@ -176,22 +173,17 @@ bool CameraCommands::setPackageSize() {
     }
 }
 
-void CameraCommands::parseSnapshotParameters(const char* command) {
-    const char *start_parameter_2 = strchr(command, ':') + 1;
-    size_t parameter_2_length = (command + strlen(command)) - start_parameter_2;
-    char parameter_2[parameter_2_length];
-    strncpy(parameter_2, start_parameter_2, parameter_2_length);
-    //parameter_2[parameter_2_length] = '\0';
+void CameraCommands::parseSnapshotParameters(std::string command) {
+    command.erase(0, command.find(cmd_delimiter) + cmd_delimiter.size());
+    std::string frames_value = command;
 
-    try {
-        getSnapshot(std::stoi(parameter_2));
+    int num_frames {};
+    if (!std::istringstream(frames_value) >> num_frames) {
+        sendClientMessage("Frames value \"" + frames_value + "\" is invalid.\n\n");
+        return;
     }
-    catch (std::out_of_range const& oor) {
-        sendClientMessage("Number of frames to skip is out of range.\n\n");
-    }
-    catch (std::invalid_argument const& ia) {
-        sendClientMessage("Invalid number of frames to skip.\n\n");
-    }
+
+    getSnapshot(num_frames);
 }
 
 void CameraCommands::getSnapshot(int num_frames) {

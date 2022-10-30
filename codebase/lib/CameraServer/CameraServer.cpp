@@ -1,6 +1,7 @@
 #include "CameraServer.h"
 #include "..\..\src\Credentials.h"
 #include "..\FileOperations\FileOperations.h"
+#include <string>
 
 void CameraServer::initialise() {
   IPAddress staticIP(10, 100, 0, 200);
@@ -28,17 +29,20 @@ void CameraServer::initialise() {
 }
 
 void CameraServer::webSocketEvent(WStype_t type, uint8_t* payload) {
-  const char* payload_str = (char*) payload;
-
   if (type == WStype_TEXT) {
-    if (memcmp(payload_str, syncCmd, sizeof(*syncCmd)) == 0)
+    std::string payload_str((char*)payload);
+
+    if (payload_str.substr(0, syncCmd.size()) == syncCmd)
       cameraCommands.attemptSync();
 
-    else if (memcmp(payload_str, initialiseCmd, sizeof(*initialiseCmd)) == 0)
+    else if (payload_str.substr(0, initialiseCmd.size()) == initialiseCmd)
       cameraCommands.parseInitialisationParameters(payload_str);
 
-    else if (memcmp(payload_str, snapshotCmd, sizeof(*snapshotCmd)) == 0)
+    else if (payload_str.substr(0, snapshotCmd.size()) == snapshotCmd)
       cameraCommands.parseSnapshotParameters(payload_str);
+
+    else
+      cameraCommands.unrecognisedCommand(payload_str);
   }
 }
 
