@@ -4,11 +4,11 @@
 #include <FS.h>
 
 class FileOperations {
-    private:
-
     public:
         static String getMimeType(String filename);
         static String getFilePath(String uri);
+    
+    private:
 };
 
 #endif

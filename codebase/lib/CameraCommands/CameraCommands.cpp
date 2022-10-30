@@ -1,4 +1,7 @@
 #include "CameraCommands.h"
+#include <map>
+#include <string>
+#include <stdexcept>
 
 void CameraCommands::receiveCameraResponse(byte* reply) {
     int byte_num = 0;
@@ -7,9 +10,8 @@ void CameraCommands::receiveCameraResponse(byte* reply) {
         reply[byte_num] = Serial.read();
         byte_num++;
 
-        if (byte_num == NUM_BYTES_IN_CMD) {
+        if (byte_num == NUM_BYTES_IN_CMD)
             break;
-        }
     }
 }
 
@@ -56,20 +58,20 @@ void CameraCommands::parseInitialisationParameters(const char* command) {
     bool set_package_size = false;
 
     static std::map<std::string, byte> ColourTypes = {  
-                                                {"2GS", 0x01}, {"4GS", 0x02}, {"8GS", 0x03},
-                                                {"8C", 0x04}, {"12C", 0x05}, {"16C", 0x06},
-                                                {"J", 0x07}
-                                            };
+                                                        {"2GS", 0x01}, {"4GS", 0x02}, {"8GS", 0x03},
+                                                        {"8C", 0x04}, {"12C", 0x05}, {"16C", 0x06},
+                                                        {"J", 0x07}
+                                                    };
 
     static std::map<std::string, byte> RawResolutions = { 
-                                                        {"80x60", 0x01}, {"160x120", 0x03}, {"320x240", 0x05},
-                                                        {"640x480", 0x07}, {"128x128", 0x09}, {"128x96", 0x0B} 
-                                                };
+                                                            {"80x60", 0x01}, {"160x120", 0x03}, {"320x240", 0x05},
+                                                            {"640x480", 0x07}, {"128x128", 0x09}, {"128x96", 0x0B}
+                                                        };
 
     static std::map<std::string, byte> JpegResolutions = {  
-                                                        {"80x64", 0x01}, {"160x128", 0x03}, {"320x240", 0x05},
-                                                        {"640x480", 0x07} 
-                                                };
+                                                            {"80x64", 0x01}, {"160x128", 0x03}, {"320x240", 0x05},
+                                                            {"640x480", 0x07}
+                                                        };
 
     const char *start_parameter_1 = strchr(command, ':') + 1;
     const char *start_parameter_2 = strchr(command, ',') + 1;

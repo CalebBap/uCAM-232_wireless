@@ -1,21 +1,6 @@
 #include "CameraServer.h"
-
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-
-ESP8266WebServer server;
-WebSocketsServer webSocket = WebSocketsServer(81);
-
-const char * syncCmd = "#sync";
-const char * initialiseCmd = "#initial";
-const char * getPictureCmd = "#getPicture";
-const char * snapshotCmd = "#snapshot";
-const char * setPackageSizeCmd = "#setPackageSize";
-const char * setBaudRateCmd = "#setBaudRate";
-const char * resetCmd = "#reset";
-const char * dataCmd = "#data";
-const char * ackCmd = "#ack";
-const char * nakCmd = "#nak";
-const char * lightCmd = "#light";
+#include "..\..\src\Credentials.h"
+#include "..\FileOperations\FileOperations.h"
 
 void CameraServer::initialise() {
   IPAddress staticIP(10, 100, 0, 200);
@@ -29,28 +14,31 @@ void CameraServer::initialise() {
     yield();
   }
 
-  server.onNotFound(sendFile);
+  server.onNotFound([&]() {
+    sendFile();
+  });
 
   server.begin();
   webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
+  webSocket.onEvent([&](uint8_t num, WStype_t type, uint8_t* payload, size_t length) {
+    webSocketEvent(type, payload);
+  });
 
   SPIFFS.begin();
 }
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-  static CameraCommands cameraCommands;
+void CameraServer::webSocketEvent(WStype_t type, uint8_t* payload) {
+  const char* payload_str = (char*) payload;
 
   if (type == WStype_TEXT) {
-    if (memcmp((char *)payload, syncCmd, sizeof(syncCmd)) == 0) {
+    if (memcmp(payload_str, syncCmd, sizeof(*syncCmd)) == 0)
       cameraCommands.attemptSync();
-    }
-    else if (memcmp((char *)payload, initialiseCmd, sizeof(initialiseCmd)) == 0) {
-      cameraCommands.parseInitialisationParameters((char *)payload);
-    }
-    else if (memcmp((char *)payload, snapshotCmd, sizeof(snapshotCmd)) == 0) {
-      cameraCommands.parseSnapshotParameters((char *)payload);
-    }
+
+    else if (memcmp(payload_str, initialiseCmd, sizeof(*initialiseCmd)) == 0)
+      cameraCommands.parseInitialisationParameters(payload_str);
+
+    else if (memcmp(payload_str, snapshotCmd, sizeof(*snapshotCmd)) == 0)
+      cameraCommands.parseSnapshotParameters(payload_str);
   }
 }
 
