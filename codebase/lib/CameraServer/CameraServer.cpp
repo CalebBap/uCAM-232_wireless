@@ -36,10 +36,10 @@ void CameraServer::webSocketEvent(WStype_t type, uint8_t* payload) {
       cameraCommands.attemptSync();
 
     else if (payload_str.substr(0, initialiseCmd.size()) == initialiseCmd)
-      cameraCommands.parseInitialisationParameters(payload_str);
+      cameraCommands.attemptInitialisation(payload_str);
 
     else if (payload_str.substr(0, snapshotCmd.size()) == snapshotCmd)
-      cameraCommands.parseSnapshotParameters(payload_str);
+      cameraCommands.attemptSnapshot(payload_str);
 
     else
       cameraCommands.unrecognisedCommand(payload_str);
