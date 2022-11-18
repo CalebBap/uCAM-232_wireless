@@ -28,6 +28,14 @@ class CameraCommands {
 
         void receiveCameraResponse(byte* reply);
         void sendClientMessage(std::string message);
+
+        const std::string sync_ack = "#sync_ack";
+        const std::string sync_nak = "#sync_nak";
+        const std::string init_ack = "#init_ack";
+        const std::string init_nak = "#init_nak";
+        const std::string snap_ack = "#snap_ack";
+        const std::string snap_nak = "#snap_nak";
+
         void sendClientCommand(const byte cmd[]);
         void attemptInitialisation(const byte* init_cmd, bool set_package_size);
         bool setPackageSize();

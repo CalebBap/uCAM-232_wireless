@@ -14,18 +14,26 @@ class Controller {
 
     handleCommand(command) {
         switch (command) {
-            case "#sync_failed":
-                model.fsm(-1);
-                break;
-            case "#synced":
+            case "#sync_ack":
                 model.fsm(1);
                 break;
-            case "#init_failed":
+            case "#sync_nak":
                 model.fsm(-1);
                 break;
-            case "#initialised":
+            case "#init_ack":
                 model.fsm(1);
                 break;
+            case "#init_nak":
+                model.fsm(-1);
+                break;
+            case "#snap_ack":
+                console.log("Snapshot success");
+                break;
+            case "#snap_nak":
+                console.log("Snapshot failed");
+                break;
+            default:
+                console.log("Unhandled command: " + command);
         }
     }
 

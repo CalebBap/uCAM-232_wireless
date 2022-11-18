@@ -58,7 +58,7 @@ void CameraCommands::attemptSync() {
             sendClientMessage("Received SYNC: ");
             sendClientCommand(reply);
             Serial.write(ack_cmd, sizeof(ack_cmd));
-            sendClientMessage("#synced");
+            sendClientMessage(sync_ack);
             return;
         }
 
@@ -66,7 +66,7 @@ void CameraCommands::attemptSync() {
     }
     
     sendClientMessage("Failed to sync\n\n");
-    sendClientMessage("#sync_failed");
+    sendClientMessage(sync_nak);
 }
 
 void CameraCommands::parseInitialisationParameters(std::string command) {
@@ -100,8 +100,8 @@ void CameraCommands::parseInitialisationParameters(std::string command) {
     else {
         sendClientMessage("Invalid colour type parameter\n\n");
         sendClientMessage(static_cast<std::string>(colour_type));
-        sendClientMessage("\n\n");    // add to start of the below string?
-        sendClientMessage("#init_failed");
+        sendClientMessage("\n\n");
+        sendClientMessage(init_nak);
         return;
     }
 
@@ -115,8 +115,8 @@ void CameraCommands::parseInitialisationParameters(std::string command) {
     else {
         sendClientMessage("Invalid resolution parameter\n\n");
         sendClientMessage(static_cast<std::string>(resolution));
-        sendClientMessage("\n\n");    // add to start of the below string?
-        sendClientMessage("#init_failed");
+        sendClientMessage("\n\n");
+        sendClientMessage(init_nak);
         return;
     }
 
@@ -139,16 +139,16 @@ void CameraCommands::attemptInitialisation(const byte* init_cmd, bool set_packag
         sendClientCommand(reply);
 
         if (set_package_size && !setPackageSize()) {
-            sendClientMessage("#init_failed");
+            sendClientMessage(init_nak);
             return;
         }
 
-        sendClientMessage("#initialised");
+        sendClientMessage(init_ack);
         return;
     }
     
     sendClientMessage("Failed to initialise\n\n");
-    sendClientMessage("#init_failed");
+    sendClientMessage(init_nak);
 }
 
 bool CameraCommands::setPackageSize() {
