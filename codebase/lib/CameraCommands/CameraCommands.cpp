@@ -192,7 +192,7 @@ int CameraCommands::parseSnapshotParameters(std::string command) {
     int num_frames { -1 };
     std::istringstream ss(command);
     ss >> num_frames;
-    if (!ss || num_frames > 0xFFFF)     // move max frame limit to webpage?
+    if (!ss || !ss.eof())
         sendClientMessage("Frames value \"" + command + "\" is invalid.\n\n");
 
    return num_frames;

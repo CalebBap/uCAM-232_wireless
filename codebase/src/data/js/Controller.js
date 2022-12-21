@@ -60,7 +60,7 @@ class Controller {
         
         let num_skip_frames = document.getElementById("snapshot_skip_frames").value;
         
-        if (!integer_regex.test(num_skip_frames)) {
+        if (!integer_regex.test(num_skip_frames) || num_skip_frames > 0xFFFF) {
             alert("Invalid number of frames entered.");
             return false;
         }
