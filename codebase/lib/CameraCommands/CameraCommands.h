@@ -48,6 +48,8 @@ class CameraCommands {
             {"80x64", 0x01}, {"160x128", 0x03}, {"320x240", 0x05}, {"640x480", 0x07}
         };
 
+        std::map<ColourType, byte> SnapshotType = { {JPEG, 0x00}, {RAW, 0x01} };
+
         static constexpr byte nak_reply[] = {0xAA, 0x0F, 0x00};
         static constexpr uint8_t nak_byte { 4 };
 
@@ -55,7 +57,9 @@ class CameraCommands {
         ColourType current_colour_type { NONE };
 
         static constexpr int CMD_CLIENT_MESSAGE_SIZE { 37 };
-        static constexpr int MAX_PKG_SIZE_BYTES { 512 };
+        static constexpr int PKG_SIZE_BYTES { 512 };
+        static constexpr int NUM_PKG_DATA_BYTES { PKG_SIZE_BYTES - 6 };
+        static constexpr int MIN_PKG_BYTES { 5 };
         static constexpr int NUM_BYTES_IN_CMD { 6 };
         static constexpr int MAX_CMD_ATTEMPTS { 60 };
         static constexpr int MIN_CMD_DELAY { 5 };
@@ -74,15 +78,22 @@ class CameraCommands {
         static constexpr byte snapshot_id { 0x05 };
         static constexpr byte pkg_size_id { 0x06 };
         static constexpr byte sync_id { 0x0D };
+        static constexpr byte picture_id { 0x04 };
+        static constexpr byte data_id { 0x0A };
 
         void receiveCameraResponse(byte* reply, int reply_size);
         void sendClientMessage(std::string message);
         void sendClientCommand(const byte* cmd);
         bool sendCameraCommand(const byte* cmd, const byte id);
         bool getCameraCommand(const byte id, uint8_t& nak_reason);
-        bool parseInitialisationParameters(byte* init_cmd, std::string command);
+        bool parseInitParameters(byte* init_cmd, std::string command);
         bool setPackageSize();
         int parseSnapshotParameters(std::string command);
+        void getPicture(DataType data_type);
+        void getData(DataType data_type);
+        void getJpegData(uint32_t img_size);
+        void getRawData();
+        std::string bytes2Str(byte* data, int data_size);
 };
 
 #endif
