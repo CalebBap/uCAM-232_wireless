@@ -75,7 +75,7 @@ class CameraCommands {
         static constexpr byte pkg_size_id { 0x06 };
         static constexpr byte sync_id { 0x0D };
 
-        void receiveCameraResponse(byte* reply);
+        void receiveCameraResponse(byte* reply, int reply_size);
         void sendClientMessage(std::string message);
         void sendClientCommand(const byte* cmd);
         bool sendCameraCommand(const byte* cmd, const byte id);

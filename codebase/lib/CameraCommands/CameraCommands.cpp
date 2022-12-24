@@ -16,21 +16,17 @@ void CameraCommands::unrecognisedCommand(std::string command) {
     sendClientMessage("Unrecognised command: " + command);
 }
 
-void CameraCommands::receiveCameraResponse(byte* reply) {
-    int byte_num { 0 };
-    while (Serial.available() > 0) {
-        reply[byte_num] = Serial.read();
-        byte_num++;
+void CameraCommands::receiveCameraResponse(byte* reply, int reply_size) {
+    while (Serial.available() < reply_size) yield();
 
-        if (byte_num == NUM_BYTES_IN_CMD)
-            break;
-    }
+    for (int i{0}; i < reply_size; i++)
+        reply[i] = Serial.read();
 }
 
 bool CameraCommands::getCameraCommand(const byte id, uint8_t& nak_reason) {
     const byte ack_reply[] = {0xAA, 0x0E, id};
     byte reply[NUM_BYTES_IN_CMD];
-    receiveCameraResponse(reply);
+    receiveCameraResponse(reply, sizeof(reply));
 
     if (memcmp(reply, ack_reply, sizeof(ack_reply)) == 0) {
         sendClientMessage("Received ACK: ");
@@ -82,7 +78,7 @@ void CameraCommands::attemptSync() {
 
     // receive SYNC command and ACK it
     byte reply[NUM_BYTES_IN_CMD];
-    receiveCameraResponse(reply);
+    receiveCameraResponse(reply, sizeof(reply));
     if (memcmp(reply, sync_cmd, sizeof(sync_cmd)) == 0) {
         sendClientMessage("Received SYNC: ");
         sendClientCommand(reply);
