@@ -1,4 +1,9 @@
 class Controller {
+    constructor() {
+        this.receiving_image = false;
+        this.image_data = "";
+    }
+
     handleWebSocketMessage(data) {
         if (data.charAt(0) == '#') {
             controller.handleCommand(data);
@@ -27,13 +32,17 @@ class Controller {
                 model.fsm(-1);
                 break;
             case "#snap_ack":
-                console.log("Snapshot success");
+                model.fsm(0);   // TODO
                 break;
             case "#snap_nak":
-                console.log("Snapshot failed");
+                model.fsm(-1);
                 break;
             default:
-                console.log("Unhandled command: " + command);
+                if (command.substring(0, 4) == "#img")
+                    this.processImageData(command.substring(4));
+                else
+                    console.log("Unhandled command: " + command);
+                break;
         }
     }
 
@@ -70,6 +79,53 @@ class Controller {
     
     handleClearBttn() {
         view.clearElementValue("response_console");
+    }
+
+    processImageData(data) {
+        let end_of_image = (data.slice(-4) == "#end");
+
+        if (end_of_image) {
+            data = data.replace("#end", "");
+
+            // if there's an error receiving image from camera, #end is sent without any image data
+            if (data == "") {
+                this.receiving_image = false;
+                this.image_data = "";
+                return;
+            }
+        }
+
+        if (this.receiving_image) {
+            this.image_data += data;
+        }
+        else {
+            this.receiving_image = true;
+            this.image_data = data;
+        }
+
+        if (end_of_image) {
+            if (this.validImageData())
+                model.fsm(0);
+            this.receiving_image = false;
+            this.image_data = "";
+        }
+    }
+
+    validImageData() {
+        let invalid_chars = this.image_data.match(/[^A-Fa-f0-9]/g);
+        if (invalid_chars) {
+            view.addConsoleText("Invalid characters in image data: " + invalid_chars);
+            return false;
+        }
+        return true;
+    }
+
+    getImageData() {
+        return this.image_data;
+    }
+
+    handleExitImageBttn() {
+        model.fsm(-1);
     }
 }
 

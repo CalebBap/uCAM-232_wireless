@@ -73,6 +73,15 @@ select {
     display: none;
 }
 
+#image_content {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #controls_div {
     margin: 1.5vmin auto 1.5vmin auto;
     height: 30vh;
@@ -268,5 +277,25 @@ select {
 }
 
 #clear_terminal_bttn:active {
+    opacity: 0.5;
+}
+
+#received_image {
+    max-height: 80%;
+}
+
+#exit_image_bttn {
+    margin-top: 1vh;
+    padding: 0.75em;
+
+    color: white;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    font-size: calc(0.4em + 1vh);
+    font-weight: 400;
+    background-color: #151515;
+    border: 0.3em solid #282828;
+}
+
+#exit_image_bttn:active {
     opacity: 0.5;
 }

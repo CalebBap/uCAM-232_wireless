@@ -285,6 +285,7 @@ void CameraCommands::getJpegData(uint32_t img_size) {
         uint16_t pkg_id { static_cast<uint16_t>(id_byte_1 | (id_byte_2 << 8)) };
         if (pkg_num != pkg_id) {
             sendClientMessage("Unexpected package ID received\n\n");
+            sendClientMessage("#end");
             return;
         }
 
@@ -295,16 +296,22 @@ void CameraCommands::getJpegData(uint32_t img_size) {
         uint16_t data_size { static_cast<uint16_t>(data_size_byte_1 | (data_size_byte_2 << 8)) };
         if (data_size > PKG_SIZE_BYTES) {
             sendClientMessage("Data size of " + std::to_string(data_size) + " bytes is too large\n\n");
+            sendClientMessage("#end");
             return;
         }
 
-        byte data[data_size];
+        std::string data_str { "#img" };
         for (int i{0}; i < data_size; i++) {
             while (Serial.available() == 0) yield();
-            data[i] = Serial.read() & 0xFF;
-            pkg_sum += data[i];
+            byte data { static_cast<byte>(Serial.read() & 0xFF) };
+            pkg_sum += data;
+            data_str += hex_digits[(data & 0xF0) >> 4];
+            data_str += hex_digits[(data & 0xF)];
         }
-        sendClientMessage(bytes2Str(data, sizeof(data)));   // send image data to terminal for now
+
+        if (pkg_num == num_pkgs - 1)
+            data_str += "#end";
+        sendClientMessage(data_str);
 
         while (Serial.available() < 2) yield(); // wait for verify code bytes
 
@@ -312,7 +319,8 @@ void CameraCommands::getJpegData(uint32_t img_size) {
         uint8_t verify_code_byte_2 { static_cast<uint8_t>(Serial.read() & 0xFF) };
 
         if ( (verify_code_byte_1 != (pkg_sum & 0xFF)) || (verify_code_byte_2 != 0) ) {
-            sendClientMessage("Invalid verify code");
+            sendClientMessage("Invalid verify code received");
+            sendClientMessage("#end");
             return;
         }
     }
@@ -320,13 +328,4 @@ void CameraCommands::getJpegData(uint32_t img_size) {
 
 void CameraCommands::getRawData() {
     sendClientMessage("getRawData()");
-}
-
-std::string CameraCommands::bytes2Str(byte* data, int data_size) {
-  std::ostringstream oss;
-  oss << std::hex << std::setfill('0');
-  for (int i{0}; i < data_size; i++) {
-    oss << std::setw(2) << (unsigned int)data[i];
-  }
-  return oss.str();
 }

@@ -5,6 +5,7 @@ class View {
 
     loadSuccess() {
         document.getElementById("loading_content").style.display = "none";
+        document.getElementById("image_content").style.display = "none";
         document.getElementById("main_content").style.display = "block";
     }
 
@@ -93,6 +94,15 @@ class View {
 
         this.setButtonState("prev_control", "prev_control_bttn", true);
         this.setButtonState("next_control", "next_control_bttn", true);
+    }
+
+    displayImage(data) {
+        document.getElementById("main_content").style.display = "none";
+        document.getElementById("image_content").style.display = "flex";
+
+        const img_vals = Uint8Array.from(data.match(/.{1,2}/g), x => parseInt(x, 16));
+        const img_blob = new Blob([img_vals], { type: 'application/octet-stream' });
+        document.getElementById("received_image").src = window.URL.createObjectURL(img_blob);
     }
 
     setButtonState(div_id, button_id, enable) {

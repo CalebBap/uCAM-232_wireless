@@ -66,6 +66,7 @@ class CameraCommands {
 
         static constexpr std::string_view cmd_delimiter = ":";
         static constexpr std::string_view value_delimiter = ",";
+        static constexpr const char* hex_digits = "0123456789abcdef";
 
         const std::string sync_ack = "#sync_ack";
         const std::string sync_nak = "#sync_nak";
@@ -93,7 +94,6 @@ class CameraCommands {
         void getData(DataType data_type);
         void getJpegData(uint32_t img_size);
         void getRawData();
-        std::string bytes2Str(byte* data, int data_size);
 };
 
 #endif

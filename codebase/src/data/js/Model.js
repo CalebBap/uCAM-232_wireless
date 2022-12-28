@@ -139,9 +139,17 @@ class Model {
                 }
                 break;
             case 4:
+                if (value == -1) {
+                    view.loadSuccess();
+                }
                 view.showSnapshotControls();
                 break;
             case 5:
+                if (value == 0) {
+                    view.displayImage(controller.getImageData());
+                    return;
+                }
+
                 let getSnapshot = document.getElementById("get_snapshot_input").checked;
 
                 if (nextBttnPressed && getSnapshot) {

@@ -5,7 +5,7 @@
 
 class FileOperations {
     public:
-        static String getMimeType(String filename);
+        static String getMimeType(const String filename);
         static String getFilePath(String uri);
     
     private:

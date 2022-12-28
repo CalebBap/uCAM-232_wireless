@@ -1,6 +1,6 @@
 #include "FileOperations.h"
 
-String FileOperations::getMimeType(String filename) {
+String FileOperations::getMimeType(const String filename) {
   if (filename.endsWith(".html")) {
     return "text/html";
   }
