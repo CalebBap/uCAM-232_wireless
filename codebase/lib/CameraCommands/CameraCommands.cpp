@@ -64,6 +64,36 @@ bool CameraCommands::sendCameraCommand(const byte* cmd, const byte id) {
     return false;
 }
 
+int CameraCommands::getColourTypeIndex(const std::string& colour_type_str) {
+    if (colour_type_str == "2GS") return RAW_2GS;
+    else if (colour_type_str == "4GS") return RAW_4GS;
+    else if (colour_type_str == "8GS") return RAW_8GS;
+    else if (colour_type_str == "8C") return RAW_8C;
+    else if (colour_type_str == "12C") return RAW_12C;
+    else if (colour_type_str == "16C") return RAW_16C;
+    else if (colour_type_str == "J") return JPEG;
+    else return -1;
+}
+
+int CameraCommands::getResolutionTypeIndex(const int colour_type_index, const std::string& resolution) {
+    if (colour_type_index == JPEG) {
+        if (resolution == "80x64") return JPEG_80x64;
+        else if (resolution == "160x128") return JPEG_160x128;
+        else if (resolution == "320x240") return JPEG_320x240;
+        else if (resolution == "640x480") return JPEG_640x480;
+    }
+    else if (colour_type_index != -1) {
+        if (resolution == "80x60") return RAW_80x60;
+        else if (resolution == "128x96") return RAW_128x96;
+        else if (resolution == "128x128") return RAW_128x128;
+        else if (resolution == "160x120") return RAW_160x120;
+        else if (resolution == "320x240") return RAW_320x240;
+        else if (resolution == "640x480") return RAW_640x480;
+    }
+    
+    return -1;
+}
+
 void CameraCommands::attemptSync() {
     const byte sync_cmd[] = {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};
     const byte ack_cmd[] = {0xAA, 0x0E, 0x0D, 0x00, 0x00, 0x00};
@@ -98,46 +128,59 @@ void CameraCommands::attemptSync() {
 }
 
 bool CameraCommands::parseInitParameters(byte* init_cmd, std::string command) {
+    // parse colour type and resolution from command
     command.erase(0, command.find(cmd_delimiter) + cmd_delimiter.size());
-    std::string_view colour_type { command.substr(0, command.find(value_delimiter)) };
+    const std::string colour_type { command.substr(0, command.find(value_delimiter)) };
     command.erase(0, command.find(value_delimiter) + value_delimiter.size());
-    std::string_view resolution { command };
+    const std::string resolution { command };
 
-    if (ColourTypes.find(colour_type) != ColourTypes.end()) {
-        init_cmd[3] = ColourTypes[colour_type];
+    // set current colour type and resolution members
+    int colour_type_index { getColourTypeIndex(colour_type) };
+    int resolution_index { getResolutionTypeIndex(colour_type_index, resolution) };
+    if ( (colour_type_index == -1) || (resolution_index == -1) ) {
+        sendClientMessage("Invalid parameters: Colour type = " + colour_type + ", Resolution = " + resolution + "\n\n");
+        sendClientMessage(init_nak);
+        current_colour_type = nullptr;
+        current_resolution = nullptr;
+        return false;
+    }
+    current_colour_type = ColourTypes[colour_type_index];
+    current_resolution = ResolutionTypes[resolution_index];
+
+    // set colour type byte in command
+    if (ColourTypeValues.find(current_colour_type) != ColourTypeValues.end()) {
+        init_cmd[3] = ColourTypeValues[current_colour_type];
     }
     else {
-        sendClientMessage("Invalid colour type parameter\n\n");
-        sendClientMessage(static_cast<std::string>(colour_type));
-        sendClientMessage("\n\n");
+        sendClientMessage("Invalid colour type parameter: " + std::string(current_colour_type) + "\n\n");
         sendClientMessage(init_nak);
+        current_colour_type = nullptr;
+        current_resolution = nullptr;
         return false;
     }
 
-    if ( (colour_type == "J") && (JpegResolutions.find(resolution) != JpegResolutions.end()) ) {
-        init_cmd[4] = JpegResolutions[resolution];
-        init_cmd[5] = JpegResolutions[resolution];
-        current_colour_type = JPEG;
+    // set resolution byte in command
+    if ( (current_colour_type == ColourTypes[JPEG]) && (JpegResolutionValues.find(current_resolution) != JpegResolutionValues.end()) ) {
+        init_cmd[5] = JpegResolutionValues[current_resolution];
+        return true;
     }
-    else if (RawResolutions.find(resolution) != RawResolutions.end()) {
-        init_cmd[4] = RawResolutions[resolution];
-        current_colour_type = RAW;
+    else if ( (current_colour_type != nullptr) && (RawResolutionValues.find(current_resolution) != RawResolutionValues.end()) ) {
+        init_cmd[4] = RawResolutionValues[current_resolution];
+        return true;
     }
-    else {
-        sendClientMessage("Invalid resolution parameter\n\n");
-        sendClientMessage(static_cast<std::string>(resolution));
-        sendClientMessage("\n\n");
-        sendClientMessage(init_nak);
-        current_colour_type = NONE;
-        return false;
-    }
-
-    return true;
+    sendClientMessage("Invalid resolution parameter: " + std::string(current_resolution) + "\n\n");
+    sendClientMessage(init_nak);
+    current_colour_type = nullptr;
+    current_resolution = nullptr;
+    return false;
 }
 
 void CameraCommands::attemptInitialisation(std::string command) {
     byte init_cmd[]= {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
-    parseInitParameters(init_cmd, command);
+    if (!parseInitParameters(init_cmd, command)) {
+        sendClientMessage("Failed to parse initialisation parameters\n\n");
+        return;
+    }
 
     sendClientMessage("Attempting initialisation: ");
     sendClientCommand(init_cmd);
@@ -148,13 +191,13 @@ void CameraCommands::attemptInitialisation(std::string command) {
         return;
     }
 
-    if (current_colour_type == JPEG) {
+    if (current_colour_type == ColourTypes[JPEG]) {
         if (setPackageSize())
             sendClientMessage(init_ack);
         else
             sendClientMessage(init_nak);
     }
-    else if (current_colour_type == RAW) {
+    else if (current_colour_type != nullptr) {
         sendClientMessage(init_ack);
     }
     else {
@@ -205,8 +248,11 @@ void CameraCommands::attemptSnapshot(std::string command) {
     const byte upper_byte = (num_frames >> 8) & 0xFF;
     byte snapshot_cmd[]= {0xAA, 0x05, 0x00, lower_byte, upper_byte, 0x00};
 
-    if (SnapshotType.find(current_colour_type) != SnapshotType.end()) {
-        snapshot_cmd[2] = SnapshotType[current_colour_type];
+    if (current_colour_type == ColourTypes[JPEG]) {
+        snapshot_cmd[2] = JpegSnapshot;
+    }
+    else if (current_colour_type != nullptr) {
+        snapshot_cmd[2] = RawSnapshot;
     }
     else {
         sendClientMessage("Failed to get snapshot: no colour type selected.\n\n");
@@ -224,7 +270,7 @@ void CameraCommands::attemptSnapshot(std::string command) {
     }
 }
 
-void CameraCommands::getPicture(DataType data_type) {
+void CameraCommands::getPicture(DataTypeValues data_type) {
     const byte picture_cmd[] = {0xAA, 0x04, data_type, 0x00, 0x00, 0x00};
 
     sendClientMessage("Attempting to get picture: ");
@@ -238,7 +284,7 @@ void CameraCommands::getPicture(DataType data_type) {
     }
 }
 
-void CameraCommands::getData(DataType data_type) {
+void CameraCommands::getData(DataTypeValues data_type) {
     byte reply[NUM_BYTES_IN_CMD];
     receiveCameraResponse(reply, sizeof(reply));
     
@@ -253,18 +299,19 @@ void CameraCommands::getData(DataType data_type) {
         return;
     }
 
-    uint32_t img_size { (uint32_t)reply[3] | (uint32_t)(reply[4] << 8) | (uint32_t)(reply[5] << 16) };
+    sendClientMessage("#img," + std::string(current_colour_type) + "," + std::string(current_resolution));
 
-    if ( (data_type == SNAPSHOT) && (current_colour_type == JPEG) )
+    uint32_t img_size { (uint32_t)reply[3] | (uint32_t)(reply[4] << 8) | (uint32_t)(reply[5] << 16) };
+    if ( (data_type == SNAPSHOT) && (current_colour_type == ColourTypes[JPEG]) )
         getJpegData(img_size);
     else
-        getRawData();
+        getRawData(img_size);
 }
 
 void CameraCommands::getJpegData(uint32_t img_size) {
     const uint32_t num_pkgs { (img_size + NUM_PKG_DATA_BYTES - 1) / NUM_PKG_DATA_BYTES };    // ceiling division
-    byte ack_cmd[] = { 0xAA, 0x0E, 0x00, 0x00, 0x00, 0x00};
 
+    byte ack_cmd[] = { 0xAA, 0x0E, 0x00, 0x00, 0x00, 0x00};
     sendClientMessage("Sending ACK: ");
     sendClientCommand(ack_cmd);
 
@@ -326,6 +373,24 @@ void CameraCommands::getJpegData(uint32_t img_size) {
     }
 }
 
-void CameraCommands::getRawData() {
-    sendClientMessage("getRawData()");
+void CameraCommands::getRawData(uint32_t img_size) {
+    std::string data_str { "#img" };
+    for (uint32_t i{1}; i <= img_size; i++) {
+        while (Serial.available() == 0) yield();
+
+        byte data { static_cast<byte>(Serial.read() & 0xFF) };
+        data_str += hex_digits[(data & 0xF0) >> 4];
+        data_str += hex_digits[(data & 0xF)];
+
+        if (i == img_size) {
+            data_str += "#end";
+            sendClientMessage(data_str);
+            return;
+        }
+
+        if (i % PKG_SIZE_BYTES == 0) {
+            sendClientMessage(data_str);
+            data_str = "#img";
+        }
+    }
 }

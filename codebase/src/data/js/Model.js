@@ -114,6 +114,9 @@ class Model {
     
         switch (this.fsm_state) {
             case 0:
+                if (value == -5) {  // returning to controls from image display
+                    view.loadSuccess();
+                }
                 view.showSyncControls();
                 break;
             case 1:
@@ -139,14 +142,11 @@ class Model {
                 }
                 break;
             case 4:
-                if (value == -1) {
-                    view.loadSuccess();
-                }
                 view.showSnapshotControls();
                 break;
             case 5:
                 if (value == 0) {
-                    view.displayImage(controller.getImageData());
+                    view.displayImage();
                     return;
                 }
 
@@ -171,6 +171,8 @@ class Model {
             case 6:
                 view.showGetPictureControls();
                 break;
+            default:
+                console.log("Error: FSM in invalid state: " + this.fsm_state + " (transition value: " + value + ")");
         }
     }
 }

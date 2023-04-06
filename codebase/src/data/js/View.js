@@ -99,10 +99,7 @@ class View {
     displayImage(data) {
         document.getElementById("main_content").style.display = "none";
         document.getElementById("image_content").style.display = "flex";
-
-        const img_vals = Uint8Array.from(data.match(/.{1,2}/g), x => parseInt(x, 16));
-        const img_blob = new Blob([img_vals], { type: 'application/octet-stream' });
-        document.getElementById("received_image").src = window.URL.createObjectURL(img_blob);
+        document.getElementById("received_image").src = controller.image.image_uri;
     }
 
     setButtonState(div_id, button_id, enable) {

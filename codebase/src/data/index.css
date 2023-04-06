@@ -282,6 +282,7 @@ select {
 
 #received_image {
     max-height: 80%;
+    background-color: transparent;
 }
 
 #exit_image_bttn {
