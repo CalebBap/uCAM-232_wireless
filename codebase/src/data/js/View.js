@@ -99,7 +99,7 @@ class View {
     displayImage(data) {
         document.getElementById("main_content").style.display = "none";
         document.getElementById("image_content").style.display = "flex";
-        document.getElementById("received_image").src = controller.image.image_uri;
+        document.getElementById("received_image").src = controller.image.getImageUri();
     }
 
     setButtonState(div_id, button_id, enable) {
