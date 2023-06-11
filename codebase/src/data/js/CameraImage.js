@@ -1,4 +1,4 @@
-const ColourTypes = new Set("J", "2GS", "4GS", "8GS", "8C", "12C", "16C");
+const ColourTypes = new Set(["J", "2GS", "4GS", "8GS", "8C", "12C", "16C"]);
 const ResolutionWidths = new Set([80, 128, 160, 320, 640]);
 const ResolutionHeights = new Set([60, 64, 96, 120, 128, 240, 480]);
 
@@ -36,7 +36,7 @@ class CameraImage {
             this.#colour_type = type;
             return true;
         }
-        return true;
+        return false;
     }
 
     setResolution(width, height) {
@@ -90,7 +90,7 @@ class CameraImage {
                         else if (bit_depth == 4)
                             val = val << 4;
 
-                            let pos = (y * width + x) * 4;
+                        let pos = (y * this.#width + x) * 4;
                         buffer[pos] = val;
                         buffer[pos+1] = val;
                         buffer[pos+2] = val;
