@@ -1,5 +1,5 @@
-#ifndef FileOperations_h
-#define FileOperations_h
+#ifndef FILE_OPERATIONS_H
+#define FILE_OPERATIONS_H
 
 #include <FS.h>
 

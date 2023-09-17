@@ -11,7 +11,7 @@ This project aims to build a wireless camera that can operate over a WLAN and be
 ### Installation
 1) [The schematic](https://github.com/CalebBap/uCAM-232_wireless/blob/master/schematic.png) for this project is available under the repository's root directory.
 2) After cloning or downloading the repository, the "codebase" folder should be opened using the PlatformIO extension for Visual Studio Code.
-3) A header file named "Credentials" should then be created with the following file path: `\uCAM-232_wireless\codebase\src\Credentials.h`
+3) A header file named "Credentials" should then be created with the following file path: `uCAM-232_wireless\codebase\include\Credentials.h`
 4) Populate Credentials.h as follows:<br>
     `#define WAN_NAME "[SSID]"`<br>
     `#define PASSWORD "[Password]"`<br>

@@ -2,42 +2,108 @@
 #include <sstream>
 #include <iomanip>
 
-void CameraCommands::sendClientMessage(std::string message) {
-    webSocket.broadcastTXT(message.c_str(), message.size());
+namespace {
+    constexpr int PKG_SIZE_BYTES { 512 };
+    constexpr int NUM_BYTES_IN_CMD { 6 };
+    static constexpr std::string_view cmd_delimiter = ":";
+    static constexpr std::string_view value_delimiter = ",";
+    static constexpr const char* hex_digits = "0123456789abcdef";
+
+    enum DataTypeValues { SNAPSHOT = 0x01, RAW_PREVIEW = 0x02, JPEG_PREVIEW = 0x05 };
+
+    enum ColourTypeIndex { RAW_2GS, RAW_4GS, RAW_8GS, RAW_8C, RAW_12C, RAW_16C, JPEG };
+    static const constexpr char* const ColourTypes[] = { "2GS", "4GS", "8GS", "8C", "12C", "16C", "J" };
+
+    enum ResolutionTypeIndex { RAW_80x60, RAW_160x120, RAW_320x240, RAW_640x480, RAW_128x128, RAW_128x96,
+                                JPEG_80x64, JPEG_160x128, JPEG_320x240, JPEG_640x480 };
+    static const constexpr char* const ResolutionTypes[] = { "80x60", "160x120", "320x240", "640x480", "128x128",
+                                                                "128x96", "80x64", "160x128", "320x240", "640x480" };
+
+    std::map<std::string_view, byte> ColourTypeValues = {
+        {ColourTypes[RAW_2GS], 0x01}, {ColourTypes[RAW_4GS], 0x02}, {ColourTypes[RAW_8GS], 0x03},
+        {ColourTypes[RAW_8C], 0x04}, {ColourTypes[RAW_12C], 0x05}, {ColourTypes[RAW_16C], 0x06},
+        {ColourTypes[JPEG], 0x07}
+    };
+
+    std::map<std::string_view, byte> RawResolutionValues = {
+        {ResolutionTypes[RAW_80x60], 0x01}, {ResolutionTypes[RAW_160x120], 0x03},
+        {ResolutionTypes[RAW_320x240], 0x05}, {ResolutionTypes[RAW_640x480], 0x07},
+        {ResolutionTypes[RAW_128x128], 0x09}, {ResolutionTypes[RAW_128x96], 0x0B}
+    };
+
+    std::map<std::string_view, byte> JpegResolutionValues = {
+        {ResolutionTypes[JPEG_80x64], 0x01}, {ResolutionTypes[JPEG_160x128], 0x03},
+        {ResolutionTypes[JPEG_320x240], 0x05}, {ResolutionTypes[JPEG_640x480], 0x07}
+    };
+
+    const std::map<uint8_t, std::string> NakReason {
+        { 0x01, "Picture Type Error" }, { 0x02, "Picture Up Scale" },
+        { 0x03, "Picture Scale Error" }, { 0x04, "Unexpected Reply" },
+        { 0x05, "Send Picture Timeout" }, { 0x06, "Unexpected Command" },
+        { 0x07, "SRAM JPEG Type Error" }, { 0x08, "SRAM JPEG Size Error" },
+        { 0x09, "Picture Format Error" }, { 0x0A, "Picture Size Error" },
+        { 0x0B, "Parameter Error" }, { 0x0C, "Send Register Timeout" },
+        { 0x0D, "Command ID Error" }, { 0x0F, "Picture Not Ready" },
+        { 0x10, "Transfer Package Number Error" }, { 0x11, "Set Transfer Package Size Wrong" },
+        { 0xF0, "Command Header Error" }, { 0xF1, "Command Length Error" },
+        { 0xF5, "Send Picture Error" }, { 0xFF, "Send Command Error" }
+    };
+} // namespace
+
+CameraCommands::CameraCommands(WebSocketsServer& wbs) :
+    mWebSocket(wbs) {}
+
+void CameraCommands::sendClientMessage(const std::string& message) {
+    mWebSocket.broadcastTXT(message.c_str(), message.size());
 }
 
-void CameraCommands::sendClientCommand(const byte* cmd) {
-    char values[CMD_CLIENT_MESSAGE_SIZE];
-    snprintf(values, sizeof(values), "0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n\n",
-             cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
-    webSocket.broadcastTXT(values, strlen(values));
+void CameraCommands::sendClientCommand(const std::vector<byte>& cmd) {
+    std::ostringstream oss;
+    oss << std::hex;
+
+    auto addValue = [&oss](byte value) {
+        oss << "0x" << std::setfill('0') << std::setw(2) << static_cast<int>(value) << ", ";
+    };
+
+    for (byte value : cmd) {
+        addValue(value);
+    }
+
+    std::string cmd_str(oss.str());
+    cmd_str.replace(cmd_str.end() - 2, cmd_str.end(), "\n\n");
+    sendClientMessage(cmd_str);
 }
 
-void CameraCommands::unrecognisedCommand(std::string command) {
+void CameraCommands::unrecognisedCommand(const std::string& command) {
     sendClientMessage("Unrecognised command: " + command);
 }
 
-void CameraCommands::receiveCameraResponse(byte* reply, int reply_size) {
-    while (Serial.available() < reply_size) yield();
+void CameraCommands::receiveCameraResponse(std::vector<byte>& reply, int size) {
+    while (Serial.available() < size) yield();
 
-    for (int i{0}; i < reply_size; i++)
-        reply[i] = Serial.read();
+    reply.resize(size);
+    for (int i{0}; i < size; i++) {
+        reply[i] = Serial.read() & 0xFF;
+    }
 }
 
 bool CameraCommands::getCameraCommand(const byte id, uint8_t& nak_reason) {
-    const byte ack_reply[] = {0xAA, 0x0E, id};
-    byte reply[NUM_BYTES_IN_CMD];
-    receiveCameraResponse(reply, sizeof(reply));
+    constexpr byte nak_byte { 0x04 };
+    const std::array<byte, 3> ack_reply {0xAA, 0x0E, id};
+    constexpr std::array<byte, 3> nak_reply { 0xAA, 0x0F, 0x00 };
 
-    if (memcmp(reply, ack_reply, sizeof(ack_reply)) == 0) {
+    std::vector<byte> reply(NUM_BYTES_IN_CMD);
+    receiveCameraResponse(reply, NUM_BYTES_IN_CMD);
+
+    if (std::equal(ack_reply.begin(), ack_reply.end(), reply.begin())) {
         sendClientMessage("Received ACK: ");
         sendClientCommand(reply);
         return true;
     }
-    else if ( (memcmp(reply, nak_reply, sizeof(nak_reply)) == 0) && (nak_reason != reply[nak_byte]) ) {
+    else if (std::equal(nak_reply.begin(), nak_reply.end(), reply.begin())) {
         sendClientMessage("Received NAK: ");
 
-        nak_reason = reply[nak_byte];
+        nak_reason = reply.at(nak_byte);
         auto reason = NakReason.find(nak_reason);
         if (reason != NakReason.end())
             sendClientMessage(reason->second + "\n\n");
@@ -48,12 +114,21 @@ bool CameraCommands::getCameraCommand(const byte id, uint8_t& nak_reason) {
     return false;
 }
 
-bool CameraCommands::sendCameraCommand(const byte* cmd, const byte id) {
+bool CameraCommands::sendCameraCommand(const std::vector<byte>& cmd, const byte id) {
     uint8_t nak_reason { 0 };
-    for (int i{0}; i < MAX_CMD_ATTEMPTS; i++) {
-        Serial.write(cmd, NUM_BYTES_IN_CMD);
+    constexpr int minCmdDelay { 5 };
+    constexpr int maxCmdAttempts { 60 };
+
+    if (cmd.size() != NUM_BYTES_IN_CMD) {
+        std::string bytes { std::to_string(cmd.size()) };
+        sendClientMessage("Unexpected camera command size: " + bytes + " bytes");
+        return false;
+    }
+
+    for (int i{0}; i < maxCmdAttempts; i++) {
+        Serial.write(cmd.data(), cmd.size());
         Serial.flush();
-        delay(MIN_CMD_DELAY + i);
+        delay(minCmdDelay + i);
 
         if (getCameraCommand(id, nak_reason))
             return true;
@@ -95,12 +170,16 @@ int CameraCommands::getResolutionTypeIndex(const int colour_type_index, const st
 }
 
 void CameraCommands::attemptSync() {
-    const byte sync_cmd[] = {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};
-    const byte ack_cmd[] = {0xAA, 0x0E, 0x0D, 0x00, 0x00, 0x00};
+    const std::string sync_ack { "#sync_ack" };
+    const std::vector<byte> sync_cmd {0xAA, 0x0D, 0x00, 0x00, 0x00, 0x00};
+    const std::vector<byte> ack_cmd {0xAA, 0x0E, 0x0D, 0x00, 0x00, 0x00};
 
     // send SYNC command
     sendClientMessage("Attempting to sync: ");
     sendClientCommand(sync_cmd);
+
+    constexpr byte sync_id { 0x0D };
+    const std::string sync_nak = "#sync_nak";
     if (!sendCameraCommand(sync_cmd, sync_id)) {
         sendClientMessage("Failed to sync with camera\n\n");
         sendClientMessage(sync_nak);
@@ -108,15 +187,16 @@ void CameraCommands::attemptSync() {
     }
 
     // receive SYNC command and ACK it
-    byte reply[NUM_BYTES_IN_CMD];
-    receiveCameraResponse(reply, sizeof(reply));
-    if (memcmp(reply, sync_cmd, sizeof(sync_cmd)) == 0) {
+    std::vector<byte> reply(NUM_BYTES_IN_CMD);
+    receiveCameraResponse(reply, NUM_BYTES_IN_CMD);
+
+    if (std::equal(sync_cmd.begin(), sync_cmd.end(), reply.begin())) {
         sendClientMessage("Received SYNC: ");
         sendClientCommand(reply);
 
         sendClientMessage("Acknowledging sync: ");
         sendClientCommand(ack_cmd);
-        Serial.write(ack_cmd, sizeof(ack_cmd));
+        Serial.write(ack_cmd.data(), ack_cmd.size());
         Serial.flush();
         sendClientMessage(sync_ack);
     }
@@ -127,7 +207,7 @@ void CameraCommands::attemptSync() {
     }
 }
 
-bool CameraCommands::parseInitParameters(byte* init_cmd, std::string command) {
+bool CameraCommands::parseInitParameters(std::vector<byte>& init_cmd, std::string command) {
     // parse colour type and resolution from command
     command.erase(0, command.find(cmd_delimiter) + cmd_delimiter.size());
     const std::string colour_type { command.substr(0, command.find(value_delimiter)) };
@@ -139,7 +219,6 @@ bool CameraCommands::parseInitParameters(byte* init_cmd, std::string command) {
     int resolution_index { getResolutionTypeIndex(colour_type_index, resolution) };
     if ( (colour_type_index == -1) || (resolution_index == -1) ) {
         sendClientMessage("Invalid parameters: Colour type = " + colour_type + ", Resolution = " + resolution + "\n\n");
-        sendClientMessage(init_nak);
         current_colour_type = nullptr;
         current_resolution = nullptr;
         return false;
@@ -153,7 +232,6 @@ bool CameraCommands::parseInitParameters(byte* init_cmd, std::string command) {
     }
     else {
         sendClientMessage("Invalid colour type parameter: " + std::string(current_colour_type) + "\n\n");
-        sendClientMessage(init_nak);
         current_colour_type = nullptr;
         current_resolution = nullptr;
         return false;
@@ -169,15 +247,18 @@ bool CameraCommands::parseInitParameters(byte* init_cmd, std::string command) {
         return true;
     }
     sendClientMessage("Invalid resolution parameter: " + std::string(current_resolution) + "\n\n");
-    sendClientMessage(init_nak);
     current_colour_type = nullptr;
     current_resolution = nullptr;
     return false;
 }
 
 void CameraCommands::attemptInitialisation(std::string command) {
-    byte init_cmd[]= {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
+    const std::string init_ack = "#init_ack";
+    const std::string init_nak = "#init_nak";
+    std::vector<byte> init_cmd {0xAA, 0x01, 0x00, 0x01, 0x01, 0x01};
+
     if (!parseInitParameters(init_cmd, command)) {
+        sendClientMessage(init_nak);
         sendClientMessage("Failed to parse initialisation parameters\n\n");
         return;
     }
@@ -185,6 +266,7 @@ void CameraCommands::attemptInitialisation(std::string command) {
     sendClientMessage("Attempting initialisation: ");
     sendClientCommand(init_cmd);
 
+    constexpr byte init_id { 0x01 };
     if (!sendCameraCommand(init_cmd, init_id)) {
         sendClientMessage("Failed to initialise camera\n\n");
         sendClientMessage(init_nak);
@@ -209,11 +291,12 @@ void CameraCommands::attemptInitialisation(std::string command) {
 bool CameraCommands::setPackageSize() {
     constexpr byte lower_byte = PKG_SIZE_BYTES & 0xFF;
     constexpr byte upper_byte = (PKG_SIZE_BYTES >> 8) & 0xFF;
-    const byte package_size_cmd[] = {0xAA, 0x06, 0x08, lower_byte, upper_byte, 0x00};
+    const std::vector<byte> package_size_cmd {0xAA, 0x06, 0x08, lower_byte, upper_byte, 0x00};
 
     sendClientMessage("Attempting to set package size: ");
     sendClientCommand(package_size_cmd);
 
+    constexpr byte pkg_size_id { 0x06 };
     if (sendCameraCommand(package_size_cmd, pkg_size_id)) {
         sendClientMessage("Package size set to 512 bytes\n\n");
         return true;
@@ -237,6 +320,8 @@ int CameraCommands::parseSnapshotParameters(std::string command) {
 }
 
 void CameraCommands::attemptSnapshot(std::string command) {
+    const std::string snap_nak = "#snap_nak";
+
     int num_frames { parseSnapshotParameters(command) };
     if (num_frames < 0) {
         sendClientMessage("Failed to get snapshot\n\n");
@@ -246,13 +331,15 @@ void CameraCommands::attemptSnapshot(std::string command) {
 
     const byte lower_byte = num_frames & 0xFF;
     const byte upper_byte = (num_frames >> 8) & 0xFF;
-    byte snapshot_cmd[]= {0xAA, 0x05, 0x00, lower_byte, upper_byte, 0x00};
+    std::vector<byte> snapshot_cmd {0xAA, 0x05, 0x00, lower_byte, upper_byte, 0x00};
 
+    constexpr byte jpeg_snapshot { 0x00 };
+    constexpr byte raw_snapshot { 0x01 };
     if (current_colour_type == ColourTypes[JPEG]) {
-        snapshot_cmd[2] = JpegSnapshot;
+        snapshot_cmd[2] = jpeg_snapshot;
     }
     else if (current_colour_type != nullptr) {
-        snapshot_cmd[2] = RawSnapshot;
+        snapshot_cmd[2] = raw_snapshot;
     }
     else {
         sendClientMessage("Failed to get snapshot: no colour type selected.\n\n");
@@ -262,6 +349,7 @@ void CameraCommands::attemptSnapshot(std::string command) {
     sendClientMessage("Attempting to take snapshot: ");
     sendClientCommand(snapshot_cmd);
 
+    constexpr byte snapshot_id { 0x05 };
     if (sendCameraCommand(snapshot_cmd, snapshot_id))
         getPicture(SNAPSHOT);
     else {
@@ -270,12 +358,13 @@ void CameraCommands::attemptSnapshot(std::string command) {
     }
 }
 
-void CameraCommands::getPicture(DataTypeValues data_type) {
-    const byte picture_cmd[] = {0xAA, 0x04, data_type, 0x00, 0x00, 0x00};
+void CameraCommands::getPicture(byte data_type) {
+    const std::vector<byte> picture_cmd {0xAA, 0x04, data_type, 0x00, 0x00, 0x00};
 
     sendClientMessage("Attempting to get picture: ");
     sendClientCommand(picture_cmd);
 
+    constexpr byte picture_id { 0x04 };
     if (sendCameraCommand(picture_cmd, picture_id))
         getData(data_type);
     else {
@@ -284,12 +373,14 @@ void CameraCommands::getPicture(DataTypeValues data_type) {
     }
 }
 
-void CameraCommands::getData(DataTypeValues data_type) {
-    byte reply[NUM_BYTES_IN_CMD];
-    receiveCameraResponse(reply, sizeof(reply));
-    
-    const byte expected_reply[] = {0xAA, data_id, data_type};
-    if ( memcmp(reply, expected_reply, sizeof(expected_reply)) == 0 ) {
+void CameraCommands::getData(byte data_type) {
+    constexpr byte data_id { 0x0A };
+    const std::array<byte, 3> expected_reply {0xAA, data_id, data_type};
+
+    std::vector<byte> reply(NUM_BYTES_IN_CMD);
+    receiveCameraResponse(reply, NUM_BYTES_IN_CMD);
+
+    if (std::equal(expected_reply.begin(), expected_reply.end(), reply.begin())) {
         sendClientMessage("Received data command: ");
         sendClientCommand(reply);
     }
@@ -301,7 +392,11 @@ void CameraCommands::getData(DataTypeValues data_type) {
 
     sendClientMessage("#img," + std::string(current_colour_type) + "," + std::string(current_resolution));
 
-    uint32_t img_size { (uint32_t)reply[3] | (uint32_t)(reply[4] << 8) | (uint32_t)(reply[5] << 16) };
+    uint32_t img_size { 0 };
+    img_size |= static_cast<uint32_t>(reply.at(3));
+    img_size |= static_cast<uint32_t>(reply.at(4) << 8);
+    img_size |= static_cast<uint32_t>(reply.at(5) << 16);
+
     if ( (data_type == SNAPSHOT) && (current_colour_type == ColourTypes[JPEG]) )
         getJpegData(img_size);
     else
@@ -309,16 +404,17 @@ void CameraCommands::getData(DataTypeValues data_type) {
 }
 
 void CameraCommands::getJpegData(uint32_t img_size) {
-    const uint32_t num_pkgs { (img_size + NUM_PKG_DATA_BYTES - 1) / NUM_PKG_DATA_BYTES };    // ceiling division
+    constexpr int numPkgDataBytes { PKG_SIZE_BYTES - 6 };
+    const uint32_t num_pkgs { (img_size + numPkgDataBytes - 1) / numPkgDataBytes };    // ceiling division
+    std::vector<byte> ack_cmd { 0xAA, 0x0E, 0x00, 0x00, 0x00, 0x00};
 
-    byte ack_cmd[] = { 0xAA, 0x0E, 0x00, 0x00, 0x00, 0x00};
     sendClientMessage("Sending ACK: ");
     sendClientCommand(ack_cmd);
 
     for (uint16_t pkg_num {0}; pkg_num < num_pkgs; pkg_num++) {
         ack_cmd[4] = static_cast<byte>(pkg_num & 0xFF);
         ack_cmd[5] = static_cast<byte>(pkg_num >> 8);
-        Serial.write(ack_cmd, sizeof(ack_cmd));
+        Serial.write(ack_cmd.data(), ack_cmd.size());
         Serial.flush();
 
         while (Serial.available() < 4) yield(); // wait for id and data size bytes
