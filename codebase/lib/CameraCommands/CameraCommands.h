@@ -14,22 +14,19 @@ class CameraCommands {
 
         void attemptSync();
         void unrecognisedCommand(const std::string& command);
-        void attemptInitialisation(std::string command);
-        void attemptSnapshot(std::string command);
+        void attemptInitialisation(const std::string& command);
+        void attemptSnapshot(const std::string& command);
 
     private:
         WebSocketsServer& mWebSocket;
-        const char* current_colour_type { nullptr };
-        const char* current_resolution { nullptr };
+        std::string current_colour_type;
+        std::string current_resolution;
 
         void sendClientMessage(const std::string& message);
         void receiveCameraResponse(std::vector<byte>& reply, int size);
         bool sendCameraCommand(const std::vector<byte>& cmd, const byte id);
         void sendClientCommand(const std::vector<byte>& cmd);
         bool getCameraCommand(const byte id, uint8_t& nak_reason);
-
-        int getColourTypeIndex(const std::string& colour_type_str);
-        int getResolutionTypeIndex(const int colour_type_index, const std::string& resolution);
 
         int parseSnapshotParameters(std::string command);
         bool parseInitParameters(std::vector<byte>& init_cmd, std::string command);
