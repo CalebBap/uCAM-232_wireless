@@ -35,7 +35,7 @@
 
                     <div id="initialise_options">
                         <label for="colour_type">Colour type: </label><br>
-                        <select id="colour_type" name="colour_type" autocomplete="off" onchange="controller.handleInitialiseSelection()">
+                        <select id="colour_type" autocomplete="off" onchange="controller.handleInitialiseSelection()">
                             <option selected value=""></option>
                             <option value="2GS">2-bit Gray Scale</option>
                             <option value="4GS">4-bit Gray Scale</option>
@@ -47,25 +47,17 @@
                         </select>
                         <br>
 
-                        <label for="raw_resolutions">Raw resolution: </label><br>
-                        <select id="raw_resolutions" name="raw_resolutions" autocomplete="off" onchange="controller.handleInitialiseSelection()">
-                            <option selected value=""></option>
-                            <option value="80x60">80x60</option>
-                            <option value="128x96">128x96</option>
-                            <option value="128x128">128x128</option>
-                            <option value="160x120">160x120</option>
-                            <option value="320x240">320x240</option>
-                            <option value="640x480">640x480</option>
-                        </select>
-                        <br>
-
-                        <label for="jpeg_resolutions">JPEG resolution: </label><br>
-                        <select id="jpeg_resolutions" name="jpeg_resolutions" autocomplete="off" onchange="controller.handleInitialiseSelection()">
-                            <option selected value=""></option>
-                            <option value="80x64">80x64</option>
-                            <option value="160x128">160x128</option>
-                            <option value="320x240">320x240</option>
-                            <option value="640x480">640x480</option>
+                        <label for="resolutions">Resolution: </label><br>
+                        <select id="resolutions" autocomplete="off" onchange="controller.handleInitialiseSelection()">
+                            <option data-type="any" value="" selected></option>
+                            <option data-type="raw" value="80x60">80x60</option>
+                            <option data-type="jpg" value="80x64">80x64</option>
+                            <option data-type="raw" value="128x96">128x96</option>
+                            <option data-type="raw" value="128x128">128x128</option>
+                            <option data-type="raw" value="160x120">160x120</option>
+                            <option data-type="jpg" value="160x128">160x128</option>
+                            <option data-type="any" value="320x240">320x240</option>
+                            <option data-type="any" value="640x480">640x480</option>
                         </select>
                     </div>
 

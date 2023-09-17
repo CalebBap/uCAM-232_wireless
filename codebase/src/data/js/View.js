@@ -38,13 +38,48 @@ class View {
 
         this.setSelectionState("colour_type", true);
         document.getElementById("colour_type").value = "";
-        this.setSelectionState("raw_resolutions", true);
-        document.getElementById("raw_resolutions").value = "";
-        this.setSelectionState("jpeg_resolutions", true);
-        document.getElementById("jpeg_resolutions").value = "";
+        this.setSelectionState("resolutions", false);
+        document.getElementById("resolutions").value = "";
 
         this.setButtonState("prev_control", "prev_control_bttn", true);
         this.setButtonState("next_control", "next_control_bttn", true);
+    }
+
+    updateResolutionsOptions(colour_value) {
+        const select_element = document.getElementById("resolutions");
+        const jpeg_selected = colour_value === 'J';
+
+        select_element.querySelectorAll("[data-type='jpg']").forEach(option => {
+            option.style.display = jpeg_selected ? "inherit" : "none";
+        });
+        select_element.querySelectorAll("[data-type='raw']").forEach(option => {
+            option.style.display = !jpeg_selected ? "inherit" : "none";
+        });
+        select_element.querySelectorAll("[data-type='any']").forEach(option => {
+            option.style.display = "inherit";
+        });
+
+        const selected_option = select_element.options[select_element.selectedIndex];
+        if (selected_option.style.display === "none") {
+            this.clearElementValue(select_element.id);
+        }
+    }
+
+    initOptionSelection(colour_value, resolution_value) {
+        let has_colour_value = (colour_value !== "") && (colour_value !== undefined);
+        let has_resolution_value = resolution_value !== "";
+
+        if (has_colour_value) {
+            this.setSelectionState("resolutions", true);
+            this.updateResolutionsOptions(colour_value);
+        }
+        else {
+            this.setSelectionState("resolutions", false);
+            this.clearElementValue("resolutions");
+        }
+
+        let all_options_selected = has_colour_value && has_resolution_value;
+        this.setButtonState("next_control", "next_control_bttn", all_options_selected);
     }
 
     waitForInit() {
@@ -52,8 +87,7 @@ class View {
         this.setButtonState("next_control", "next_control_bttn", false);
         
         this.setSelectionState("colour_type", false);
-        this.setSelectionState("raw_resolutions", false);
-        this.setSelectionState("jpeg_resolutions", false);
+        this.setSelectionState("resolutions", false);
     }
 
     showSnapshotControls() {

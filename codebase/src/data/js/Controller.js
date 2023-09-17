@@ -40,9 +40,8 @@ class Controller {
 
     handleInitialiseSelection() {
         let colour_value = document.getElementById("colour_type").value;
-        let raw_res_value = document.getElementById("raw_resolutions").value;
-        let jpeg_res_value = document.getElementById("jpeg_resolutions").value;
-        model.initialiseOptionSelection(colour_value, raw_res_value, jpeg_res_value);
+        let resolution_value = document.getElementById("resolutions").value;
+        view.initOptionSelection(colour_value, resolution_value);
     }
 
     handleSnapshotSelection() {
