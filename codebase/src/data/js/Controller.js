@@ -1,13 +1,18 @@
 class Controller {
     image;
-    #receiving_image;
     constructor() {
         this.image = new CameraImage();
-        this.#receiving_image = false;
+    }
+
+    handleWebSocketData(data) {
+        const new_data = new Uint8Array(data);
+        if (this.image.processData(new_data)) {
+            model.fsm(0);
+        }
     }
 
     handleWebSocketMessage(data) {
-        if (data.charAt(0) == '#') {
+        if (data.charAt(0) === '#') {
             controller.handleCommand(data);
         }
         else {
@@ -32,8 +37,6 @@ class Controller {
             model.fsm(0);   // TODO
         else if (command == "#snap_nak")
             model.fsm(-1);
-        else if (command.substring(0, 4) == "#img")
-            this.handleImageData(command.substring(4));
         else
             console.log("Unhandled command: " + command);
     }
@@ -72,56 +75,6 @@ class Controller {
         view.clearElementValue("response_console");
     }
 
-    handleImageData(data) {
-        if (data.charAt(0) == ',') {
-            let delimiter_index = data.indexOf(',', 1);
-            const colour_type = data.substring(1, delimiter_index);
-            if (!this.image.setColourType(colour_type)) {
-                console.log("Failed to set colour type, type = " + colour_type);
-                // handle error
-            }
-
-            delimiter_index++;
-            const x_index = data.indexOf('x', delimiter_index);
-            const width = parseInt(data.substring(delimiter_index, x_index), 10);
-            const height = parseInt(data.substring(x_index + 1), 10);
-            if (!this.image.setResolution(width, height)) {
-                console.log("Failed to set image resolution, width = " + width + ", height = " + height);
-                // handle error
-            }
-
-            this.image.clearData();
-            return;
-        }
-
-        let end_of_image = (data.slice(-4) == "#end");
-
-        if (end_of_image) {
-            data = data.replace("#end", "");
-
-            // if there's an error receiving image from camera, #end is sent without any image data
-            if (data == "") {
-                this.#receiving_image = false;
-                this.image.clearData();
-                return;
-            }
-        }
-
-        if (this.#receiving_image) {
-            this.image.appendData(data);
-        }
-        else {
-            this.#receiving_image = true;
-            this.image.setData(data);
-        }
-
-        if (end_of_image) {
-            if (this.image.validImageData() && this.image.processImageData())
-                model.fsm(0);
-            else
-                console.log("Error processing image data");
-        }
-    }
 
     handleExitImageBttn() {
         model.fsm(-5);

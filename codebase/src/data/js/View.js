@@ -130,10 +130,10 @@ class View {
         this.setButtonState("next_control", "next_control_bttn", true);
     }
 
-    displayImage(data) {
+    displayImage() {
         document.getElementById("main_content").style.display = "none";
         document.getElementById("image_content").style.display = "flex";
-        document.getElementById("received_image").src = controller.image.getImageUri();
+        document.getElementById("received_image").src = controller.image.getUri();
     }
 
     setButtonState(div_id, button_id, enable) {

@@ -6,6 +6,7 @@ class Model {
 
     connectWebSocket() {
         this.socket = new WebSocket('ws://10.100.0.200:81');
+        this.socket.binaryType = "arraybuffer";
 
         var timer = setTimeout(function() {
             view.loadError();
@@ -22,7 +23,12 @@ class Model {
         }
 
         this.socket.onmessage = function(event) {
-            controller.handleWebSocketMessage(event.data);
+            if (event.data instanceof ArrayBuffer) {
+                controller.handleWebSocketData(event.data);
+            }
+            else {
+                controller.handleWebSocketMessage(event.data);
+            }
         }
     }
 

@@ -35,6 +35,7 @@ class CameraCommands {
         void getPicture(byte data_type);
         void getData(byte data_type);
         void getJpegData(uint32_t img_size);
+        bool parseDimensions(std::array<byte, 4>& dimension_bytes);
         void getRawData(uint32_t img_size);
 };
 

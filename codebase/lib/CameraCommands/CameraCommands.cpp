@@ -5,19 +5,31 @@
 namespace {
     constexpr int PKG_SIZE_BYTES { 512 };
     constexpr int NUM_BYTES_IN_CMD { 6 };
+    constexpr int NUM_RAW_IDENTIFIER_BYTES { 7 };
     constexpr std::string_view CMD_DELIMITER = ":";
     constexpr std::string_view VALUE_DELIMITER = ",";
     constexpr std::string_view JPEG_TYPE = "J";
-    constexpr std::string_view HEX_DIGITS = "0123456789abcdef";
+    constexpr std::string_view GS2_TYPE = "2GS";
+    constexpr std::string_view GS4_TYPE = "4GS";
+    constexpr std::string_view GS8_TYPE = "8GS";
+    constexpr std::string_view C08_TYPE = "8C";
+    constexpr std::string_view C12_TYPE = "12C";
+    constexpr std::string_view C16_TYPE = "16C";
 
     enum DataTypeValues {
         SNAPSHOT = 0x01, RAW_PREVIEW = 0x02, JPEG_PREVIEW = 0x05
     };
 
     const std::map<std::string_view, byte> ColourTypeValues {
-        {"2GS", 0x01}, {"4GS", 0x02}, {"8GS", 0x03},
-        {"8C", 0x04}, {"12C", 0x05}, {"16C", 0x06},
+        {GS2_TYPE, 0x01}, {GS4_TYPE, 0x02}, {GS8_TYPE, 0x03},
+        {C08_TYPE, 0x04}, {C12_TYPE, 0x05}, {C16_TYPE, 0x06},
         {JPEG_TYPE, 0x07}
+    };
+
+    const std::map<std::string_view, std::array<byte, NUM_RAW_IDENTIFIER_BYTES>> RawIdentifiers {
+        {GS2_TYPE, {0x47, 0x53, 0x32, 0x00, 0x00}}, {GS4_TYPE, {0x47, 0x53, 0x34, 0x00, 0x00}},
+        {GS8_TYPE, {0x47, 0x53, 0x38, 0x00, 0x00}}, {C08_TYPE, {0x43, 0x30, 0x38, 0x00, 0x00}},
+        {C12_TYPE, {0x43, 0x31, 0x32, 0x00, 0x00}}, {C16_TYPE, {0x43, 0x31, 0x36, 0x00, 0x00}}
     };
 
     const std::map<std::string_view, byte> RawResolutionValues {
@@ -359,8 +371,6 @@ void CameraCommands::getData(byte data_type) {
         return;
     }
 
-    sendClientMessage("#img," + current_colour_type + "," + current_resolution);
-
     uint32_t img_size { 0 };
     img_size |= static_cast<uint32_t>(reply.at(3));
     img_size |= static_cast<uint32_t>(reply.at(4) << 8);
@@ -380,6 +390,7 @@ void CameraCommands::getJpegData(uint32_t img_size) {
     sendClientMessage("Sending ACK: ");
     sendClientCommand(ack_cmd);
 
+    std::vector<byte> jpeg_data(PKG_SIZE_BYTES);
     for (uint16_t pkg_num {0}; pkg_num < num_pkgs; pkg_num++) {
         ack_cmd[4] = static_cast<byte>(pkg_num & 0xFF);
         ack_cmd[5] = static_cast<byte>(pkg_num >> 8);
@@ -412,18 +423,14 @@ void CameraCommands::getJpegData(uint32_t img_size) {
             return;
         }
 
-        std::string data_str { "#img" };
         for (int i{0}; i < data_size; i++) {
             while (Serial.available() == 0) yield();
             byte data { static_cast<byte>(Serial.read() & 0xFF) };
             pkg_sum += data;
-            data_str += HEX_DIGITS[(data & 0xF0) >> 4];
-            data_str += HEX_DIGITS[(data & 0x0F)];
+            jpeg_data[i] = data;
         }
 
-        if (pkg_num == num_pkgs - 1)
-            data_str += "#end";
-        sendClientMessage(data_str);
+        mWebSocket.broadcastBIN(jpeg_data.data(), data_size);
 
         while (Serial.available() < 2) yield(); // wait for verify code bytes
 
@@ -438,24 +445,69 @@ void CameraCommands::getJpegData(uint32_t img_size) {
     }
 }
 
+bool CameraCommands::parseDimensions(std::array<byte, 4>& dimension_bytes) {
+    char x;
+    uint16_t width, height;
+
+    std::istringstream iss(current_resolution);
+    bool success { (iss >> width >> x >> height) && iss.eof() };
+
+    dimension_bytes =  {
+        static_cast<byte>((width >> 8) & 0xFF), static_cast<byte>(width & 0x0FF),
+        static_cast<byte>((height >> 8) & 0xFF), static_cast<byte>(height & 0x0FF)
+    };
+
+    return success;
+}
+
 void CameraCommands::getRawData(uint32_t img_size) {
-    std::string data_str { "#img" };
-    for (uint32_t i{1}; i <= img_size; i++) {
-        while (Serial.available() == 0) yield();
+    int index { 0 };
+    std::vector<byte> raw_data(PKG_SIZE_BYTES);
 
-        byte data { static_cast<byte>(Serial.read() & 0xFF) };
-        data_str += HEX_DIGITS[(data & 0xF0) >> 4];
-        data_str += HEX_DIGITS[(data & 0x0F)];
+    // insert start of image bytes
+    constexpr std::array<byte, 2> soi_bytes { 0xFF, 0xD8 };
+    std::copy(soi_bytes.begin(), soi_bytes.end(), raw_data.begin());
+    index += soi_bytes.size();
 
-        if (i == img_size) {
-            data_str += "#end";
-            sendClientMessage(data_str);
-            return;
+    // insert dimensions of image in place of JPEG APP0 marker and length bytes
+    constexpr int num_dimension_bytes { 4 };
+    if (RawResolutionValues.find(current_resolution) != RawResolutionValues.end()) {
+        std::array<byte, num_dimension_bytes> dimensions;
+        if (parseDimensions(dimensions)) {
+            std::copy(dimensions.begin(), dimensions.end(), raw_data.begin() + index);
         }
-
-        if (i % PKG_SIZE_BYTES == 0) {
-            sendClientMessage(data_str);
-            data_str = "#img";
+        else {
+            sendClientMessage("Failed to set RAW header dimension for resolution: " + current_colour_type);
         }
     }
+    index += num_dimension_bytes;
+
+    // insert bytes to identify RAW image type in place of JPEG JFIF identifier
+    auto it { RawIdentifiers.find(current_colour_type) };
+    if (it != RawIdentifiers.end()) {
+        std::copy(it->second.begin(), it->second.end(), raw_data.begin() + index);
+    }
+    else {
+        sendClientMessage("Failed to find indentifier bytes for image type " + current_colour_type);
+    }
+    index += NUM_RAW_IDENTIFIER_BYTES;
+
+    for (uint32_t i{0}; i < img_size; i++) {
+        while (Serial.available() == 0) yield();
+
+        raw_data[index] = static_cast<byte>(Serial.read() & 0xFF);
+
+        index++;
+        if (index == PKG_SIZE_BYTES) {
+            mWebSocket.broadcastBIN(raw_data.data(), index);
+            index = 0;
+        }
+    }
+
+    if (index > 0) {
+        mWebSocket.broadcastBIN(raw_data.data(), index);
+    }
+
+    constexpr std::array<uint8_t, 2> eoi_bytes { 0xFF, 0xD9 };
+    mWebSocket.broadcastBIN(eoi_bytes.data(), eoi_bytes.size());
 }
